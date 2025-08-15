@@ -1,10 +1,10 @@
-# Meta (Facebook) Pixel by Stape for Google Tag Manager Web
+# Facebook Pixel by Stape for Google Tag Manager Web
 
-The **Meta (Facebook) Pixel by Stape** tag integrates Meta Pixel into your website via Google Tag Manager Web container. It allows sending standard or custom events to Meta (Facebook), including enhanced conversions and user data for improved attribution.
+The **Facebook Pixel by Stape** tag integrates Meta Pixel into your website via Google Tag Manager Web container. It allows sending standard or custom events to Meta (Facebook), including enhanced conversions and user data for improved attribution.
 
 ## How to Use
 
-1. Add the **Meta (Facebook) Pixel by Stape** tag to your Web GTM container.
+1. Add the **Facebook Pixel by Stape** tag to your Web GTM container.
 2. Enter one or more **Facebook Pixel IDs** (comma-separated).
 3. Choose how the **Event Name** is defined:
    - **Inherit from Data Layer** — maps GTM/GA4 event names to Meta equivalents.
@@ -79,4 +79,4 @@ Includes support for:
 
 ## Open Source
 
-The **Meta (Facebook) Pixel by Stape** tag for GTM Web is developed and maintained by the [Stape Team](https://stape.io/) under the Apache 2.0 license.
+The **Facebook Pixel by Stape** tag for GTM Web is developed and maintained by the [Stape Team](https://stape.io/) under the Apache 2.0 license.

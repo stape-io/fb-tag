@@ -13,7 +13,7 @@ ___INFO___
   "id": "cvt_temp_public_id",
   "version": 1,
   "securityGroups": [],
-  "displayName": "Meta (Facebook) Pixel by Stape",
+  "displayName": "Facebook Pixel by Stape",
   "categories": [
     "ADVERTISING",
     "ANALYTICS",
