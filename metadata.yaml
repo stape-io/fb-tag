@@ -1,0 +1,5 @@
+homepage: 'https://stape.io/'
+documentation: 'https://github.com/stape-io/fb-tag'
+versions:
+  - sha: 971b3f931f2e6f4049e4e4a843982ffe46f8ec61
+    changeNotes: Initial release.
