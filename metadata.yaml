@@ -1,5 +1,7 @@
 homepage: 'https://stape.io/'
 documentation: 'https://github.com/stape-io/fb-tag'
 versions:
+  - sha: b0845fac46c3f4c952335a2b2d756ee32e0e8085
+    changeNotes: Modified the tag icon.
   - sha: 971b3f931f2e6f4049e4e4a843982ffe46f8ec61
     changeNotes: Initial release.
