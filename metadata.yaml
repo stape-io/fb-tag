@@ -1,7 +1,7 @@
 homepage: 'https://stape.io/'
 documentation: 'https://github.com/stape-io/fb-tag'
 versions:
-  - sha: d6da4e9b1f245a73b6c7ecf90a0922417cd1d7d0
+  - sha: dccabebd698879aaae88a0cce20ae2a9e2651dfc
     changeNotes: |2
       Added option to hash localStorage User Data.
       Fixed Advanced Matching User Data not being sent on init calls.
