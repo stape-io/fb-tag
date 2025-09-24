@@ -362,12 +362,12 @@ function sendDataLayerPush() {
 function parseUserData(userData, userDataFrom, useDL) {
   let email = userDataFrom.email || userDataFrom.sha256_email_address || userDataFrom.email_address || userDataFrom.em;
   const emailType = getType(email);
-  if (emailType === 'array') email = email[0];
+  if (emailType === 'array' || emailType === 'object') email = email[0];
   if (email) userData.em = email;
 
   let phone = userDataFrom.phone || userDataFrom.sha256_phone_number || userDataFrom.phone_number || userDataFrom.ph;
   const phoneType = getType(phone);
-  if (phoneType === 'array') phone = phone[0];
+  if (phoneType === 'array' || phoneType === 'object') phone = phone[0];
   if (phone) userData.ph = phone;
 
   if (userDataFrom.firstName) userData.fn = userDataFrom.firstName;
