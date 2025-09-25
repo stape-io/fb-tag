@@ -189,7 +189,7 @@ ___TEMPLATE_PARAMETERS___
     "name": "enableDataLayerMapping",
     "checkboxText": "Enable automatic data population from the Data Layer",
     "simpleValueType": true,
-    "help": "If you check this, then the Facebook tag will populate standard Object Properties and User Properties automatically from the DataLayer. Tag parse Universal Anlytics,  \u003ca target\u003d\"_blank\" href\u003d\"https://developers.google.com/analytics/devguides/collection/ga4/ecommerce\"\u003eGA4\u003c/a\u003e and \u003ca target\u003d\"_blank\" href\u003d\"https://developers.google.com/tag-platform/tag-manager/server-side/common-event-data\"\u003eCommon Event Data\u003c/a\u003e formats.",
+    "help": "If you check this, then the Facebook tag will populate standard Object Properties and User Data automatically from the DataLayer. The tag parses Universal Analytics,  \u003ca target\u003d\"_blank\" href\u003d\"https://developers.google.com/analytics/devguides/collection/ga4/ecommerce\"\u003eGA4\u003c/a\u003e and \u003ca target\u003d\"_blank\" href\u003d\"https://developers.google.com/tag-platform/tag-manager/server-side/common-event-data\"\u003eCommon Event Data\u003c/a\u003e formats.",
     "defaultValue": true
   },
   {
@@ -219,12 +219,28 @@ ___TEMPLATE_PARAMETERS___
     "name": "enableEventEnhancement",
     "checkboxText": "Enable Event Enhancement",
     "simpleValueType": true,
-    "help": "Enable the use of LocalStorage to store data for enhanced event tracking.",
+    "help": "Enable the use of \u003ci\u003elocalStorage\u003c/i\u003e to store data for enhanced event tracking.\n\u003cbr/\u003e\u003cbr/\u003e\nNote: If the \u003ci\u003eEnable automatic data population from the Data Layer\u003c/i\u003e option is selected, all User Data it finds in the Data Layer will be stored, not just the fields explicitly defined in the User Data section.",
     "enablingConditions": [
       {
         "paramName": "enableEdvancedMatching",
         "paramValue": true,
         "type": "EQUALS"
+      }
+    ],
+    "subParams": [
+      {
+        "type": "CHECKBOX",
+        "name": "storeUserDataHashed",
+        "checkboxText": "Store User Data hashed",
+        "simpleValueType": true,
+        "help": "The User Data will be stored hashed in \u003ci\u003elocalStorage\u003c/i\u003e.",
+        "enablingConditions": [
+          {
+            "paramName": "enableEventEnhancement",
+            "paramValue": true,
+            "type": "EQUALS"
+          }
+        ]
       }
     ]
   },
@@ -322,7 +338,7 @@ ___TEMPLATE_PARAMETERS___
       {
         "type": "LABEL",
         "name": "userDataLabel",
-        "displayName": "User Data Properties that you can send to Meta you can find \u003ca target\u003d\"_blank\" href\u003d\"https://developers.facebook.com/docs/meta-pixel/advanced/advanced-matching\"\u003eby this link\u003c/a\u003e.\u003cbr\u003e\u003cbr\u003e"
+        "displayName": "User Data Properties that you can send to Meta can be found at \u003ca target\u003d\"_blank\" href\u003d\"https://developers.facebook.com/docs/meta-pixel/advanced/advanced-matching\"\u003ethis link\u003c/a\u003e.\u003cbr\u003e\u003cbr\u003e"
       },
       {
         "type": "SELECT",
@@ -410,7 +426,6 @@ ___TEMPLATE_PARAMETERS___
         "newRowButtonText": "Add property"
       }
     ],
-    "help": "See \u003ca href\u003d\"https://developers.facebook.com/docs/meta-pixel/advanced/advanced-matching/\" target\u003d\"_blank\"\u003ethis documentation\u003c/a\u003e for more details on what user data parameters you can add to the call.",
     "enablingConditions": [
       {
         "paramName": "enableEdvancedMatching",
@@ -428,7 +443,7 @@ ___TEMPLATE_PARAMETERS___
       {
         "type": "LABEL",
         "name": "objectPropertiesLabel",
-        "displayName": "Standard Object Properties that you can send to Meta you can find \u003ca target\u003d\"_blank\" href\u003d\"https://developers.facebook.com/docs/meta-pixel/reference#object-properties\"\u003eby this link\u003c/a\u003e.\u003cbr\u003e\u003cbr\u003e"
+        "displayName": "Standard Object Properties that you can send to Meta can be found at \u003ca target\u003d\"_blank\" href\u003d\"https://developers.facebook.com/docs/meta-pixel/reference#object-properties\"\u003ethis link\u003c/a\u003e.\u003cbr\u003e\u003cbr\u003e"
       },
       {
         "type": "SELECT",
@@ -481,51 +496,59 @@ ___TEMPLATE_PARAMETERS___
         "help": "Set the Event ID parameter in case you are tracking the same event server-side as well. The Event ID can be used to deduplicate the same event if sent from multiple sources. See more \u003ca href\u003d\"https://developers.facebook.com/docs/marketing-api/conversions-api/deduplicate-pixel-and-server-events/\"\u003ehere\u003c/a\u003e."
       },
       {
-        "type": "CHECKBOX",
-        "name": "dataLayerEventPush",
-        "checkboxText": "Push event to DataLayer with this eventId",
-        "simpleValueType": true,
-        "help": "Helpful for easier events deduplication.",
-        "defaultValue": false
-      },
-      {
-        "type": "TEXT",
-        "name": "dataLayerEventName",
-        "displayName": "DataLayer Event Name",
-        "simpleValueType": true,
-        "enablingConditions": [
+        "type": "GROUP",
+        "name": "advancedSettingsGroup",
+        "displayName": "Advanced Settings",
+        "groupStyle": "ZIPPY_OPEN_ON_PARAM",
+        "subParams": [
           {
-            "paramName": "dataLayerEventPush",
-            "paramValue": true,
-            "type": "EQUALS"
-          }
-        ],
-        "valueValidators": [
+            "type": "CHECKBOX",
+            "name": "dataLayerEventPush",
+            "checkboxText": "Push event to DataLayer with this eventId",
+            "simpleValueType": true,
+            "help": "Helpful for easier events deduplication.",
+            "defaultValue": false
+          },
           {
-            "type": "NON_EMPTY"
-          }
-        ],
-        "valueHint": "page_view_unique"
-      },
-      {
-        "type": "TEXT",
-        "name": "dataLayerVariableName",
-        "displayName": "DataLayer Object Name",
-        "simpleValueType": true,
-        "enablingConditions": [
+            "type": "TEXT",
+            "name": "dataLayerEventName",
+            "displayName": "DataLayer Event Name",
+            "simpleValueType": true,
+            "enablingConditions": [
+              {
+                "paramName": "dataLayerEventPush",
+                "paramValue": true,
+                "type": "EQUALS"
+              }
+            ],
+            "valueValidators": [
+              {
+                "type": "NON_EMPTY"
+              }
+            ],
+            "valueHint": "page_view_unique"
+          },
           {
-            "paramName": "dataLayerEventPush",
-            "paramValue": true,
-            "type": "EQUALS"
+            "type": "TEXT",
+            "name": "dataLayerVariableName",
+            "displayName": "DataLayer Object Name",
+            "simpleValueType": true,
+            "enablingConditions": [
+              {
+                "paramName": "dataLayerEventPush",
+                "paramValue": true,
+                "type": "EQUALS"
+              }
+            ],
+            "valueValidators": [
+              {
+                "type": "NON_EMPTY"
+              }
+            ],
+            "defaultValue": "dataLayer",
+            "help": "Use dataLayer by default. Modify only if you renamed dataLayer object name."
           }
-        ],
-        "valueValidators": [
-          {
-            "type": "NON_EMPTY"
-          }
-        ],
-        "defaultValue": "dataLayer",
-        "help": "Use dataLayer by default. Modify only if you renamed dataLayer object name."
+        ]
       }
     ]
   },
@@ -568,10 +591,12 @@ const isConsentGranted = require('isConsentGranted');
 const JSON = require('JSON');
 const localStorage = require('localStorage');
 const makeNumber = require('makeNumber');
+const makeString = require('makeString');
 const makeTableMap = require('makeTableMap');
 const math = require('Math');
 const Object = require('Object');
 const setInWindow = require('setInWindow');
+const sha256 = require('sha256');
 
 /*==============================================================================
 ==============================================================================*/
@@ -594,7 +619,7 @@ injectScript('https://connect.facebook.net/en_US/fbevents.js', data.gtmOnSuccess
 ==============================================================================*/
 
 function getQueue(queueName) {
-  let q = copyFromWindow(queueName);
+  const q = copyFromWindow(queueName);
   if (q) {
     return q;
   }
@@ -664,12 +689,12 @@ function sendEvent() {
     if (initIds.indexOf(pixelId) === -1) {
       setSettings();
 
-      queue('init', pixelId, userData);
-      queue('set', 'agent', partnerName, pixelId);
-
       initIds.push(pixelId);
       setInWindow('_meta_gtm_ids', initIds, true);
     }
+
+    queue('init', pixelId, userData);
+    queue('set', 'agent', partnerName, pixelId);
 
     if (data.eventId) {
       queue(command, pixelId, eventName, eventData, { eventID: data.eventId });
@@ -690,7 +715,7 @@ function getEventName() {
       else if (ecommerceDataLayer.purchase) eventName = 'Purchase';
     }
 
-    let mapFacebookEventName = {
+    const mapFacebookEventName = {
       page_view: 'PageView',
       'gtm.dom': 'PageView',
       add_payment_info: 'AddPaymentInfo',
@@ -837,13 +862,72 @@ function getEventEnhancement() {
   return {};
 }
 
-function storeEventEnhancement(userData) {
-  if (localStorage && userData) {
-    const gtmeec = JSON.stringify(userData);
+function normalizeBasedOnSchemaKey(schemaKey, identifier) {
+  if (schemaKey === 'ph') return normalizePhoneNumber(identifier);
+  else if (schemaKey === 'ct' || schemaKey === 'st' || schemaKey === 'zp') {
+    return removeWhiteSpace(identifier);
+  } else return identifier;
+}
 
-    if (gtmeec) {
-      localStorage.setItem('gtmeec', gtmeec);
+function hashUserDataFields(userData, storeUserDataInLocalStorage) {
+  const canUseHashSync = getType(copyFromWindow('dataTag256')) === 'function';
+  const hashAsyncHelpers = {
+    pendingHashs: 0,
+    maybeFinish: (userDataHashed) => {
+      if (hashAsyncHelpers.pendingHashs === 0) storeUserDataInLocalStorage(userDataHashed);
     }
+  };
+
+  const userDataHashed = {};
+
+  const fieldNames = Object.keys(userData);
+  fieldNames.forEach((fieldName) => {
+    const value = userData[fieldName];
+
+    if (value === undefined || value === null || value === '') return;
+    if (isHashed(value)) {
+      userDataHashed[fieldName] = value;
+      return;
+    }
+
+    const normalizedValue = makeString(normalizeBasedOnSchemaKey(fieldName, value)).toLowerCase().trim();
+    if (canUseHashSync) userDataHashed[fieldName] = callInWindow('dataTag256', normalizedValue, 'HEX');
+    else {
+      hashAsyncHelpers.pendingHashs++;
+      sha256(
+        normalizedValue,
+        (digest) => {
+          userDataHashed[fieldName] = digest;
+          hashAsyncHelpers.pendingHashs--;
+          hashAsyncHelpers.maybeFinish(userDataHashed);
+        },
+        () => {
+          hashAsyncHelpers.pendingHashs--;
+        },
+        { outputEncoding: 'hex' }
+      );
+    }
+  });
+
+  if (canUseHashSync) {
+    storeUserDataInLocalStorage(userDataHashed);
+    return userDataHashed;
+  } else {
+    hashAsyncHelpers.maybeFinish(userDataHashed);
+    return;
+  }
+}
+
+function storeUserDataInLocalStorage(userData) {
+  if (!hasProps(userData)) return;
+  const gtmeec = JSON.stringify(userData);
+  localStorage.setItem('gtmeec', gtmeec);
+}
+
+function storeEventEnhancement(userData) {
+  if (localStorage && hasProps(userData)) {
+    if (!data.storeUserDataHashed) storeUserDataInLocalStorage(userData);
+    else hashUserDataFields(userData, storeUserDataInLocalStorage);
   }
 }
 
@@ -856,38 +940,34 @@ function sendDataLayerPush() {
   }
 }
 
-function mergeObjects(obj1, obj2) {
-  Object.keys(obj2).forEach((key) => {
-    obj1[key] = obj2[key];
-  });
-
-  return obj1;
-}
-
 function parseUserData(userData, userDataFrom, useDL) {
-  if (userDataFrom.email) userData.em = userDataFrom.email;
-  else if (userDataFrom.sha256_email_address) userData.em = userDataFrom.sha256_email_address;
-  else if (userDataFrom.email_address) userData.em = userDataFrom.email_address;
-  else if (userDataFrom.em) userData.em = userDataFrom.em;
+  let email = userDataFrom.email || userDataFrom.sha256_email_address || userDataFrom.email_address || userDataFrom.em;
+  const emailType = getType(email);
+  if (emailType === 'array' || emailType === 'object') email = email[0];
+  if (email) userData.em = email;
 
-  if (userDataFrom.phone) userData.ph = userDataFrom.phone;
-  else if (userDataFrom.sha256_phone_number) userData.ph = userDataFrom.sha256_phone_number;
-  else if (userDataFrom.phone_number) userData.ph = userDataFrom.phone_number;
-  else if (userDataFrom.ph) userData.ph = userDataFrom.ph;
+  let phone = userDataFrom.phone || userDataFrom.sha256_phone_number || userDataFrom.phone_number || userDataFrom.ph;
+  const phoneType = getType(phone);
+  if (phoneType === 'array' || phoneType === 'object') phone = phone[0];
+  if (phone) userData.ph = phone;
 
   if (userDataFrom.firstName) userData.fn = userDataFrom.firstName;
   else if (userDataFrom.nameFirst) userData.fn = userDataFrom.nameFirst;
   else if (userDataFrom.first_name) userData.fn = userDataFrom.first_name;
   else if (userDataFrom.fn) userData.fn = userDataFrom.fn;
   else if (userDataFrom.address && userDataFrom.address.sha256_first_name) userData.fn = userDataFrom.address.sha256_first_name;
+  else if (userDataFrom.address && userDataFrom.address[0] && userDataFrom.address[0].sha256_first_name) userData.fn = userDataFrom.address[0].sha256_first_name;
   else if (userDataFrom.address && userDataFrom.address.first_name) userData.fn = userDataFrom.address.first_name;
+  else if (userDataFrom.address && userDataFrom.address[0] && userDataFrom.address[0].first_name) userData.fn = userDataFrom.address[0].first_name;
 
   if (userDataFrom.lastName) userData.ln = userDataFrom.lastName;
   else if (userDataFrom.nameLast) userData.ln = userDataFrom.nameLast;
   else if (userDataFrom.last_name) userData.ln = userDataFrom.last_name;
   else if (userDataFrom.ln) userData.ln = userDataFrom.ln;
   else if (userDataFrom.address && userDataFrom.address.sha256_last_name) userData.ln = userDataFrom.address.sha256_last_name;
+  else if (userDataFrom.address && userDataFrom.address[0] && userDataFrom.address[0].sha256_last_name) userData.ln = userDataFrom.address[0].sha256_last_name;
   else if (userDataFrom.address && userDataFrom.address.last_name) userData.ln = userDataFrom.address.last_name;
+  else if (userDataFrom.address && userDataFrom.address[0] && userDataFrom.address[0].last_name) userData.ln = userDataFrom.address[0].last_name;
 
   if (userDataFrom.ge) userData.ge = userDataFrom.ge;
   if (userDataFrom.db) userData.db = userDataFrom.db;
@@ -895,21 +975,27 @@ function parseUserData(userData, userDataFrom, useDL) {
   if (userDataFrom.city) userData.ct = userDataFrom.city;
   else if (userDataFrom.ct) userData.ct = userDataFrom.ct;
   else if (userDataFrom.address && userDataFrom.address.city) userData.ct = userDataFrom.address.city;
+  else if (userDataFrom.address && userDataFrom.address[0] && userDataFrom.address[0].city) userData.ct = userDataFrom.address[0].city;
 
   if (userDataFrom.state) userData.st = userDataFrom.state;
   else if (userDataFrom.region) userData.st = userDataFrom.region;
   else if (userDataFrom.st) userData.st = userDataFrom.st;
   else if (userDataFrom.address && userDataFrom.address.state) userData.st = userDataFrom.address.state;
+  else if (userDataFrom.address && userDataFrom.address[0] && userDataFrom.address[0].state) userData.st = userDataFrom.address[0].state;
   else if (userDataFrom.address && userDataFrom.address.region) userData.st = userDataFrom.address.region;
+  else if (userDataFrom.address && userDataFrom.address[0] && userDataFrom.address[0].region) userData.st = userDataFrom.address[0].region;
 
   if (userDataFrom.zip) userData.zp = userDataFrom.zip;
   else if (userDataFrom.postal_code) userData.zp = userDataFrom.postal_code;
   else if (userDataFrom.zp) userData.zp = userDataFrom.zp;
   else if (userDataFrom.address && userDataFrom.address.postal_code) userData.zp = userDataFrom.address.postal_code;
+  else if (userDataFrom.address && userDataFrom.address[0] && userDataFrom.address[0].postal_code) userData.zp = userDataFrom.address[0].postal_code;
   else if (userDataFrom.address && userDataFrom.address.zip) userData.zp = userDataFrom.address.zip;
+  else if (userDataFrom.address && userDataFrom.address[0] && userDataFrom.address[0].zip) userData.zp = userDataFrom.address[0].zip;
 
   if (userDataFrom.country) userData.country = userDataFrom.country;
   else if (userDataFrom.address && userDataFrom.address.country) userData.country = userDataFrom.address.country;
+  else if (userDataFrom.address && userDataFrom.address[0] && userDataFrom.address[0].country) userData.country = userDataFrom.address[0].country;
 
   if (userDataFrom.external_id) userData.external_id = userDataFrom.external_id;
   else if (userDataFrom.user_id) userData.external_id = userDataFrom.user_id;
@@ -930,7 +1016,7 @@ function getUAEventData(eventName, objectProperties, ecommerce) {
   };
 
   if (eventActionMap[eventName]) {
-    let action = eventActionMap[eventName];
+    const action = eventActionMap[eventName];
 
     if (ecommerce[action] && ecommerce[action].products && getType(ecommerce[action].products) === 'array') {
       objectProperties = {
@@ -978,7 +1064,7 @@ function getGA4EventData(eventName, objectProperties, ecommerce) {
     }
 
     items.forEach((d, i) => {
-      let content = {};
+      const content = {};
       if (d.item_id) content.id = d.item_id;
       content.quantity = makeNumber(d.quantity) || 1;
 
@@ -1013,6 +1099,37 @@ function getGA4EventData(eventName, objectProperties, ecommerce) {
 
 function getDL(name) {
   return copyFromDataLayer(name, dataLayerVersion);
+}
+
+/*==============================================================================
+  Helpers
+==============================================================================*/
+
+function mergeObjects(obj1, obj2) {
+  Object.keys(obj2).forEach((key) => {
+    obj1[key] = obj2[key];
+  });
+
+  return obj1;
+}
+
+function hasProps(obj) {
+  return getType(obj) === 'object' && Object.keys(obj).length > 0;
+}
+
+function isHashed(value) {
+  if (!value) return false;
+  return makeString(value).match('^[A-Fa-f0-9]{64}$') !== null;
+}
+
+function normalizePhoneNumber(phoneNumber) {
+  if (!phoneNumber) return phoneNumber;
+  return phoneNumber.split('+').join('').split(' ').join('').split('-').join('').split('(').join('').split(')').join('');
+}
+
+function removeWhiteSpace(input) {
+  if (!input) return input;
+  return input.split(' ').join('');
 }
 
 
@@ -1336,6 +1453,45 @@ ___WEB_PERMISSIONS___
                   {
                     "type": 8,
                     "boolean": true
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  }
+                ]
+              },
+              {
+                "type": 3,
+                "mapKey": [
+                  {
+                    "type": 1,
+                    "string": "key"
+                  },
+                  {
+                    "type": 1,
+                    "string": "read"
+                  },
+                  {
+                    "type": 1,
+                    "string": "write"
+                  },
+                  {
+                    "type": 1,
+                    "string": "execute"
+                  }
+                ],
+                "mapValue": [
+                  {
+                    "type": 1,
+                    "string": "dataTag256"
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  },
+                  {
+                    "type": 8,
+                    "boolean": false
                   },
                   {
                     "type": 8,
