@@ -289,7 +289,7 @@ function normalizeBasedOnSchemaKey(schemaKey, identifier) {
 }
 
 function hashUserDataFields(userData, storeUserDataInLocalStorage) {
-  const canUseHashSync = copyFromWindow('dataTag256');
+  const canUseHashSync = getType(copyFromWindow('dataTag256')) === 'function';
   const hashAsyncHelpers = {
     pendingHashs: 0,
     maybeFinish: (userDataHashed) => {
