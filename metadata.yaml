@@ -1,6 +1,8 @@
 homepage: 'https://stape.io/'
 documentation: 'https://github.com/stape-io/fb-tag'
 versions:
+  - sha: f93114e312a8b6c8be230af3e838eecfe8292b89
+    changeNotes: Prevented an empty user data object or an object with only falsy values to be sent in the init call.
   - sha: 3b33f4e5fd3af9306e47beda18642a251f9c7bbb
     changeNotes: |2
       Added option to hash localStorage User Data.
