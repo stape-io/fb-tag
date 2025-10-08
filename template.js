@@ -233,6 +233,10 @@ function getUserData() {
     userData = mergeObjects(userData, makeTableMap(data.userDataList, 'name', 'value'));
   }
 
+  if (objIsEmptyOrContainsOnlyFalsyValues(userData)) {
+    return;
+  }
+
   if (data.enableEventEnhancement) {
     storeEventEnhancement(userData);
   }
@@ -338,13 +342,13 @@ function hashUserDataFields(userData, storeUserDataInLocalStorage) {
 }
 
 function storeUserDataInLocalStorage(userData) {
-  if (!hasProps(userData)) return;
+  if (!objHasProps(userData)) return;
   const gtmeec = JSON.stringify(userData);
   localStorage.setItem('gtmeec', gtmeec);
 }
 
 function storeEventEnhancement(userData) {
-  if (localStorage && hasProps(userData)) {
+  if (localStorage && objHasProps(userData)) {
     if (!data.storeUserDataHashed) storeUserDataInLocalStorage(userData);
     else hashUserDataFields(userData, storeUserDataInLocalStorage);
   }
@@ -532,8 +536,14 @@ function mergeObjects(obj1, obj2) {
   return obj1;
 }
 
-function hasProps(obj) {
+function objHasProps(obj) {
   return getType(obj) === 'object' && Object.keys(obj).length > 0;
+}
+
+function objIsEmptyOrContainsOnlyFalsyValues(obj) {
+  if (getType(obj) !== 'object') return;
+  const objValues = Object.values(obj);
+  if (objValues.length === 0 || objValues.every((v) => !v)) return true;
 }
 
 function isHashed(value) {
