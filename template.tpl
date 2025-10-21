@@ -212,31 +212,46 @@ ___TEMPLATE_PARAMETERS___
     "name": "enableEdvancedMatching",
     "checkboxText": "Enable Advanced Matching",
     "simpleValueType": true,
-    "help": "Enable sending users personal information such as email addresses, names, etc. to Meta. More information can be found \u003ca target\u003d\"_blank\" href\u003d\"https://developers.facebook.com/docs/meta-pixel/advanced/advanced-matching/\"\u003ehere\u003c/a\u003e."
-  },
-  {
-    "type": "CHECKBOX",
-    "name": "enableEventEnhancement",
-    "checkboxText": "Enable Event Enhancement",
-    "simpleValueType": true,
-    "help": "Enable the use of \u003ci\u003elocalStorage\u003c/i\u003e to store data for enhanced event tracking.\n\u003cbr/\u003e\u003cbr/\u003e\nNote: If the \u003ci\u003eEnable automatic data population from the Data Layer\u003c/i\u003e option is selected, all User Data it finds in the Data Layer will be stored, not just the fields explicitly defined in the User Data section.",
-    "enablingConditions": [
-      {
-        "paramName": "enableEdvancedMatching",
-        "paramValue": true,
-        "type": "EQUALS"
-      }
-    ],
+    "help": "Enable sending of user personal information such as email addresses, names, etc. to Meta.\n\u003cbr/\u003e\nMore information can be found \u003ca target\u003d\"_blank\" href\u003d\"https://developers.facebook.com/docs/meta-pixel/advanced/advanced-matching/\"\u003ehere\u003c/a\u003e.",
     "subParams": [
       {
-        "type": "CHECKBOX",
-        "name": "storeUserDataHashed",
-        "checkboxText": "Store User Data hashed",
-        "simpleValueType": true,
-        "help": "The User Data will be stored hashed in \u003ci\u003elocalStorage\u003c/i\u003e.",
+        "type": "GROUP",
+        "name": "advancedMatchingGroup",
+        "subParams": [
+          {
+            "type": "CHECKBOX",
+            "name": "enableEventEnhancement",
+            "checkboxText": "Enable Event Enhancement",
+            "simpleValueType": true,
+            "help": "Enable the use of \u003ci\u003elocalStorage\u003c/i\u003e to store data for enhanced event tracking.\n\u003cbr/\u003e\u003cbr/\u003e\nNote: If the \u003ci\u003eEnable automatic data population from the Data Layer\u003c/i\u003e option is selected, all User Data it finds in the Data Layer will be stored, not just the fields explicitly defined in the User Data section.",
+            "subParams": [
+              {
+                "type": "CHECKBOX",
+                "name": "storeUserDataHashed",
+                "checkboxText": "Store User Data hashed",
+                "simpleValueType": true,
+                "help": "The User Data will be stored hashed in \u003ci\u003elocalStorage\u003c/i\u003e.",
+                "enablingConditions": [
+                  {
+                    "paramName": "enableEventEnhancement",
+                    "paramValue": true,
+                    "type": "EQUALS"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "CHECKBOX",
+            "name": "runInitOnce",
+            "checkboxText": "Run the \u0027init\u0027 command only once",
+            "simpleValueType": true,
+            "help": "When Advanced Matching is enabled, the tag runs the \u003ci\u003einit\u003c/i\u003e command with each event to send user information that becomes available after page load.\n\u003cbr/\u003e\u003cbr/\u003e\nThis causes the following message in the Console from the fbevents.js file:\n\u003ci\u003e[Meta Pixel] - Duplicate Pixel ID: {Pixel ID}.\u003c/i\u003e\n\u003cbr/\u003e\u003cbr/\u003e\nEnable this option to skip repeated \u003ci\u003einit\u003c/i\u003e calls and suppress the Console message. Note that Advanced Matching data found after the first call won’t be sent."
+          }
+        ],
         "enablingConditions": [
           {
-            "paramName": "enableEventEnhancement",
+            "paramName": "enableEdvancedMatching",
             "paramValue": true,
             "type": "EQUALS"
           }
@@ -554,8 +569,8 @@ ___TEMPLATE_PARAMETERS___
   },
   {
     "type": "GROUP",
-    "name": "settingsGroup",
-    "displayName": "Settings",
+    "name": "otherSettingsGroup",
+    "displayName": "Other Settings",
     "groupStyle": "ZIPPY_CLOSED",
     "subParams": [
       {
@@ -601,7 +616,7 @@ const sha256 = require('sha256');
 /*==============================================================================
 ==============================================================================*/
 
-const partnerName = 'stape-gtm';
+const partnerName = 'stape-gtm-1.1.0';
 const queueName = 'fbq';
 const queue = getQueue(queueName);
 const initIds = copyFromWindow('_meta_gtm_ids') || [];
@@ -686,21 +701,17 @@ function sendEvent() {
   const userData = getUserData();
 
   pixelIds.split(',').forEach((pixelId) => {
-    if (initIds.indexOf(pixelId) === -1) {
-      setSettings();
+    const isNotInitialized = initIds.indexOf(pixelId) === -1;
 
+    if (isNotInitialized) {
       initIds.push(pixelId);
       setInWindow('_meta_gtm_ids', initIds, true);
+      setSettings();
     }
 
-    queue('init', pixelId, userData);
+    if (!data.runInitOnce || isNotInitialized) queue('init', pixelId, userData);
     queue('set', 'agent', partnerName, pixelId);
-
-    if (data.eventId) {
-      queue(command, pixelId, eventName, eventData, { eventID: data.eventId });
-    } else {
-      queue(command, pixelId, eventName, eventData);
-    }
+    queue(command, pixelId, eventName, eventData, data.eventId ? { eventID: data.eventId } : undefined);
   });
 }
 
@@ -1025,7 +1036,11 @@ function getUAEventData(eventName, objectProperties, ecommerce) {
     if (ecommerce[action] && ecommerce[action].products && getType(ecommerce[action].products) === 'array') {
       objectProperties = {
         content_type: 'product',
-        contents: ecommerce[action].products.map((prod) => ({ id: prod.id, quantity: makeNumber(prod.quantity) || 1, item_price: makeNumber(prod.price) })),
+        contents: ecommerce[action].products.map((prod) => ({
+          id: prod.id,
+          quantity: makeNumber(prod.quantity) || 1,
+          item_price: makeNumber(prod.price)
+        })),
         content_ids: ecommerce[action].products.map((prod) => prod.id),
         value: ecommerce[action].products.reduce((acc, cur) => {
           const curVal = math.round(makeNumber(cur.price || 0) * (cur.quantity || 1) * 100) / 100;

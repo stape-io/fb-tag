@@ -20,7 +20,7 @@ const sha256 = require('sha256');
 /*==============================================================================
 ==============================================================================*/
 
-const partnerName = 'stape-gtm';
+const partnerName = 'stape-gtm-1.1.0';
 const queueName = 'fbq';
 const queue = getQueue(queueName);
 const initIds = copyFromWindow('_meta_gtm_ids') || [];
@@ -105,21 +105,17 @@ function sendEvent() {
   const userData = getUserData();
 
   pixelIds.split(',').forEach((pixelId) => {
-    if (initIds.indexOf(pixelId) === -1) {
-      setSettings();
+    const isNotInitialized = initIds.indexOf(pixelId) === -1;
 
+    if (isNotInitialized) {
       initIds.push(pixelId);
       setInWindow('_meta_gtm_ids', initIds, true);
+      setSettings();
     }
 
-    queue('init', pixelId, userData);
+    if (!data.runInitOnce || isNotInitialized) queue('init', pixelId, userData);
     queue('set', 'agent', partnerName, pixelId);
-
-    if (data.eventId) {
-      queue(command, pixelId, eventName, eventData, { eventID: data.eventId });
-    } else {
-      queue(command, pixelId, eventName, eventData);
-    }
+    queue(command, pixelId, eventName, eventData, data.eventId ? { eventID: data.eventId } : undefined);
   });
 }
 
@@ -444,7 +440,11 @@ function getUAEventData(eventName, objectProperties, ecommerce) {
     if (ecommerce[action] && ecommerce[action].products && getType(ecommerce[action].products) === 'array') {
       objectProperties = {
         content_type: 'product',
-        contents: ecommerce[action].products.map((prod) => ({ id: prod.id, quantity: makeNumber(prod.quantity) || 1, item_price: makeNumber(prod.price) })),
+        contents: ecommerce[action].products.map((prod) => ({
+          id: prod.id,
+          quantity: makeNumber(prod.quantity) || 1,
+          item_price: makeNumber(prod.price)
+        })),
         content_ids: ecommerce[action].products.map((prod) => prod.id),
         value: ecommerce[action].products.reduce((acc, cur) => {
           const curVal = math.round(makeNumber(cur.price || 0) * (cur.quantity || 1) * 100) / 100;
