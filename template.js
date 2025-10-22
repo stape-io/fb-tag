@@ -113,7 +113,7 @@ function sendEvent() {
       setSettings();
     }
 
-    if (!data.runInitOnce || isNotInitialized) queue('init', pixelId, userData);
+    if (isNotInitialized || (data.enableEdvancedMatching && !data.runInitOnce)) queue('init', pixelId, userData);
     queue('set', 'agent', partnerName, pixelId);
     queue(command, pixelId, eventName, eventData, data.eventId ? { eventID: data.eventId } : undefined);
   });
