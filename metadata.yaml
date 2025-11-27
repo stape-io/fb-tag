@@ -1,6 +1,8 @@
 homepage: 'https://stape.io/'
 documentation: 'https://github.com/stape-io/fb-tag'
 versions:
+  - sha: 78cccf39e8d4c3e43a169c03c8d77d0b2aff5746
+    changeNotes: Organized the base configuration section. Marked Advanced Matching checkbox as default. Added Override as the default Event Name Setup Method.
   - sha: a79d9f36badc2cf762155214f2d9ad01bb01d7b5
     changeNotes: Improve init command call logic.
   - sha: 104a18fdc205c686ed4ca6923313783c85ae24f0
