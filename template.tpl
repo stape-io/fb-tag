@@ -37,225 +37,241 @@ ___TEMPLATE_PARAMETERS___
 
 [
   {
-    "type": "TEXT",
-    "name": "pixelIds",
-    "displayName": "Facebook Pixel ID(s)",
-    "simpleValueType": true,
-    "valueValidators": [
-      {
-        "type": "NON_EMPTY"
-      },
-      {
-        "type": "REGEX",
-        "args": [
-          "^[0-9,]+$"
-        ]
-      }
-    ],
-    "help": "Set to a valid Facebook Pixel ID."
-  },
-  {
-    "type": "SELECT",
-    "name": "inheritEventName",
-    "displayName": "Event Name Setup Method",
-    "selectItems": [
-      {
-        "value": "inherit",
-        "displayValue": "Inherit from DataLayer"
-      },
-      {
-        "value": "override",
-        "displayValue": "Override"
-      }
-    ],
-    "simpleValueType": true,
+    "type": "GROUP",
+    "name": "baseConfigurationGroup",
     "subParams": [
       {
-        "type": "RADIO",
-        "name": "eventName",
-        "radioItems": [
+        "type": "TEXT",
+        "name": "pixelIds",
+        "displayName": "Facebook Pixel ID(s)",
+        "simpleValueType": true,
+        "valueValidators": [
           {
-            "value": "standard",
-            "displayValue": "Standard",
-            "subParams": [
-              {
-                "type": "SELECT",
-                "name": "eventNameStandard",
-                "macrosInSelect": false,
-                "selectItems": [
-                  {
-                    "value": "PageView",
-                    "displayValue": "PageView"
-                  },
-                  {
-                    "value": "AddPaymentInfo",
-                    "displayValue": "AddPaymentInfo"
-                  },
-                  {
-                    "value": "AddToCart",
-                    "displayValue": "AddToCart"
-                  },
-                  {
-                    "value": "AddToWishlist",
-                    "displayValue": "AddToWishlist"
-                  },
-                  {
-                    "value": "CompleteRegistration",
-                    "displayValue": "CompleteRegistration"
-                  },
-                  {
-                    "value": "Contact",
-                    "displayValue": "Contact"
-                  },
-                  {
-                    "value": "CustomizeProduct",
-                    "displayValue": "CustomizeProduct"
-                  },
-                  {
-                    "value": "Donate",
-                    "displayValue": "Donate"
-                  },
-                  {
-                    "value": "FindLocation",
-                    "displayValue": "FindLocation"
-                  },
-                  {
-                    "value": "InitiateCheckout",
-                    "displayValue": "InitiateCheckout"
-                  },
-                  {
-                    "value": "Lead",
-                    "displayValue": "Lead"
-                  },
-                  {
-                    "value": "Purchase",
-                    "displayValue": "Purchase"
-                  },
-                  {
-                    "value": "Schedule",
-                    "displayValue": "Schedule"
-                  },
-                  {
-                    "value": "Search",
-                    "displayValue": "Search"
-                  },
-                  {
-                    "value": "StartTrial",
-                    "displayValue": "StartTrial"
-                  },
-                  {
-                    "value": "SubmitApplication",
-                    "displayValue": "SubmitApplication"
-                  },
-                  {
-                    "value": "Subscribe",
-                    "displayValue": "Subscribe"
-                  },
-                  {
-                    "value": "ViewContent",
-                    "displayValue": "ViewContent"
-                  }
-                ],
-                "simpleValueType": true
-              }
-            ]
+            "type": "NON_EMPTY"
           },
           {
-            "value": "custom",
-            "displayValue": "Custom",
-            "subParams": [
-              {
-                "type": "TEXT",
-                "name": "eventNameCustom",
-                "simpleValueType": true
-              }
+            "type": "REGEX",
+            "args": [
+              "^[0-9,]+$"
             ]
+          }
+        ],
+        "help": "Set to a valid Facebook Pixel ID."
+      },
+      {
+        "type": "SELECT",
+        "name": "inheritEventName",
+        "displayName": "Event Name Setup Method",
+        "selectItems": [
+          {
+            "value": "inherit",
+            "displayValue": "Inherit from DataLayer"
+          },
+          {
+            "value": "override",
+            "displayValue": "Override"
           }
         ],
         "simpleValueType": true,
-        "enablingConditions": [
-          {
-            "paramName": "inheritEventName",
-            "paramValue": "override",
-            "type": "EQUALS"
-          }
-        ],
-        "displayName": "Event Type"
-      }
-    ]
-  },
-  {
-    "type": "CHECKBOX",
-    "name": "enableDataLayerMapping",
-    "checkboxText": "Enable automatic data population from the Data Layer",
-    "simpleValueType": true,
-    "help": "If you check this, then the Facebook tag will populate standard Object Properties and User Data automatically from the DataLayer. The tag parses Universal Analytics,  \u003ca target\u003d\"_blank\" href\u003d\"https://developers.google.com/analytics/devguides/collection/ga4/ecommerce\"\u003eGA4\u003c/a\u003e and \u003ca target\u003d\"_blank\" href\u003d\"https://developers.google.com/tag-platform/tag-manager/server-side/common-event-data\"\u003eCommon Event Data\u003c/a\u003e formats.",
-    "defaultValue": true
-  },
-  {
-    "type": "CHECKBOX",
-    "name": "enableCurrentDataLayerOnly",
-    "checkboxText": "Use only data from the last DataLayer push",
-    "simpleValueType": true,
-    "help": "The tag will take data only from the current DataLayer event if enabled. In other words, only data that is pushed to DataLayer last will be used. That\u0027s how it worked in the old Facebook pixel tag.",
-    "defaultValue": false,
-    "enablingConditions": [
-      {
-        "paramName": "enableDataLayerMapping",
-        "paramValue": true,
-        "type": "EQUALS"
-      }
-    ]
-  },
-  {
-    "type": "CHECKBOX",
-    "name": "enableEdvancedMatching",
-    "checkboxText": "Enable Advanced Matching",
-    "simpleValueType": true,
-    "help": "Enable sending of user personal information such as email addresses, names, etc. to Meta.\n\u003cbr/\u003e\nMore information can be found \u003ca target\u003d\"_blank\" href\u003d\"https://developers.facebook.com/docs/meta-pixel/advanced/advanced-matching/\"\u003ehere\u003c/a\u003e.",
-    "subParams": [
-      {
-        "type": "GROUP",
-        "name": "advancedMatchingGroup",
         "subParams": [
           {
-            "type": "CHECKBOX",
-            "name": "enableEventEnhancement",
-            "checkboxText": "Enable Event Enhancement",
-            "simpleValueType": true,
-            "help": "Enable the use of \u003ci\u003elocalStorage\u003c/i\u003e to store data for enhanced event tracking.\n\u003cbr/\u003e\u003cbr/\u003e\nNote: If the \u003ci\u003eEnable automatic data population from the Data Layer\u003c/i\u003e option is selected, all User Data it finds in the Data Layer will be stored, not just the fields explicitly defined in the User Data section.",
-            "subParams": [
+            "type": "RADIO",
+            "name": "eventName",
+            "radioItems": [
               {
-                "type": "CHECKBOX",
-                "name": "storeUserDataHashed",
-                "checkboxText": "Store User Data hashed",
-                "simpleValueType": true,
-                "help": "The User Data will be stored hashed in \u003ci\u003elocalStorage\u003c/i\u003e.",
-                "enablingConditions": [
+                "value": "standard",
+                "displayValue": "Standard",
+                "subParams": [
                   {
-                    "paramName": "enableEventEnhancement",
-                    "paramValue": true,
-                    "type": "EQUALS"
+                    "type": "SELECT",
+                    "name": "eventNameStandard",
+                    "macrosInSelect": false,
+                    "selectItems": [
+                      {
+                        "value": "PageView",
+                        "displayValue": "PageView"
+                      },
+                      {
+                        "value": "AddPaymentInfo",
+                        "displayValue": "AddPaymentInfo"
+                      },
+                      {
+                        "value": "AddToCart",
+                        "displayValue": "AddToCart"
+                      },
+                      {
+                        "value": "AddToWishlist",
+                        "displayValue": "AddToWishlist"
+                      },
+                      {
+                        "value": "CompleteRegistration",
+                        "displayValue": "CompleteRegistration"
+                      },
+                      {
+                        "value": "Contact",
+                        "displayValue": "Contact"
+                      },
+                      {
+                        "value": "CustomizeProduct",
+                        "displayValue": "CustomizeProduct"
+                      },
+                      {
+                        "value": "Donate",
+                        "displayValue": "Donate"
+                      },
+                      {
+                        "value": "FindLocation",
+                        "displayValue": "FindLocation"
+                      },
+                      {
+                        "value": "InitiateCheckout",
+                        "displayValue": "InitiateCheckout"
+                      },
+                      {
+                        "value": "Lead",
+                        "displayValue": "Lead"
+                      },
+                      {
+                        "value": "Purchase",
+                        "displayValue": "Purchase"
+                      },
+                      {
+                        "value": "Schedule",
+                        "displayValue": "Schedule"
+                      },
+                      {
+                        "value": "Search",
+                        "displayValue": "Search"
+                      },
+                      {
+                        "value": "StartTrial",
+                        "displayValue": "StartTrial"
+                      },
+                      {
+                        "value": "SubmitApplication",
+                        "displayValue": "SubmitApplication"
+                      },
+                      {
+                        "value": "Subscribe",
+                        "displayValue": "Subscribe"
+                      },
+                      {
+                        "value": "ViewContent",
+                        "displayValue": "ViewContent"
+                      }
+                    ],
+                    "simpleValueType": true,
+                    "displayName": "Event Name",
+                    "defaultValue": "PageView"
+                  }
+                ]
+              },
+              {
+                "value": "custom",
+                "displayValue": "Custom",
+                "subParams": [
+                  {
+                    "type": "TEXT",
+                    "name": "eventNameCustom",
+                    "simpleValueType": true,
+                    "displayName": "Event Name",
+                    "valueValidators": [
+                      {
+                        "type": "NON_EMPTY"
+                      }
+                    ]
                   }
                 ]
               }
-            ]
-          },
-          {
-            "type": "CHECKBOX",
-            "name": "runInitOnce",
-            "checkboxText": "Run the \u0027init\u0027 command only once",
+            ],
             "simpleValueType": true,
-            "help": "When Advanced Matching is enabled, the tag runs the \u003ci\u003einit\u003c/i\u003e command with each event to send user information that becomes available after page load.\n\u003cbr/\u003e\u003cbr/\u003e\nThis causes the following message in the Console from the fbevents.js file:\n\u003ci\u003e[Meta Pixel] - Duplicate Pixel ID: {Pixel ID}.\u003c/i\u003e\n\u003cbr/\u003e\u003cbr/\u003e\nEnable this option to skip repeated \u003ci\u003einit\u003c/i\u003e calls and suppress the Console message. Note that Advanced Matching data found after the first call won’t be sent."
+            "enablingConditions": [
+              {
+                "paramName": "inheritEventName",
+                "paramValue": "override",
+                "type": "EQUALS"
+              }
+            ],
+            "displayName": "Event Type"
           }
         ],
+        "defaultValue": "override"
+      },
+      {
+        "type": "CHECKBOX",
+        "name": "enableDataLayerMapping",
+        "checkboxText": "Enable automatic User Data and Event Parameters mapping from the Data Layer",
+        "simpleValueType": true,
+        "help": "If you check this, then the Facebook tag will populate standard Object Properties and User Data automatically from the DataLayer. The tag parses Universal Analytics,  \u003ca target\u003d\"_blank\" href\u003d\"https://developers.google.com/analytics/devguides/collection/ga4/ecommerce\"\u003eGA4\u003c/a\u003e and \u003ca target\u003d\"_blank\" href\u003d\"https://developers.google.com/tag-platform/tag-manager/server-side/common-event-data\"\u003eCommon Event Data\u003c/a\u003e formats.",
+        "defaultValue": true
+      },
+      {
+        "type": "CHECKBOX",
+        "name": "enableCurrentDataLayerOnly",
+        "checkboxText": "Use data only from the most recent Data Layer event where the data can be found (ignore recursive merges)",
+        "simpleValueType": true,
+        "help": "If enabled, the tag will take data only from the most recent Data Layer event where the data can be found. \n\u003cbr/\u003e\u003cbr/\u003e\nIn other words, the tag will ignore recursive merges for Data Layer variables and take only the most recent value of the data. \u003ca href\u003d\"https://www.simoahava.com/gtm-tips/data-layer-variable-versions-explained/\"\u003eLearn more\u003c/a\u003e.\n\u003cbr/\u003e\nThat\u0027s how it worked in the old Facebook pixel tag.",
+        "defaultValue": false,
         "enablingConditions": [
           {
-            "paramName": "enableEdvancedMatching",
+            "paramName": "enableDataLayerMapping",
             "paramValue": true,
             "type": "EQUALS"
           }
         ]
+      },
+      {
+        "type": "CHECKBOX",
+        "name": "enableEdvancedMatching",
+        "checkboxText": "Enable Advanced Matching",
+        "simpleValueType": true,
+        "help": "Enable sending of user personal information such as email addresses, names, etc. to Meta.\n\u003cbr/\u003e\nMore information can be found \u003ca target\u003d\"_blank\" href\u003d\"https://developers.facebook.com/docs/meta-pixel/advanced/advanced-matching/\"\u003ehere\u003c/a\u003e.",
+        "subParams": [
+          {
+            "type": "GROUP",
+            "name": "advancedMatchingGroup",
+            "subParams": [
+              {
+                "type": "CHECKBOX",
+                "name": "enableEventEnhancement",
+                "checkboxText": "Enable Event Enhancement",
+                "simpleValueType": true,
+                "help": "Enable the use of \u003ci\u003elocalStorage\u003c/i\u003e to store data for enhanced event tracking.\n\u003cbr/\u003e\u003cbr/\u003e\nNote: If the \u003ci\u003eEnable automatic data population from the Data Layer\u003c/i\u003e option is selected, all User Data it finds in the Data Layer will be stored, not just the fields explicitly defined in the User Data section.",
+                "subParams": [
+                  {
+                    "type": "CHECKBOX",
+                    "name": "storeUserDataHashed",
+                    "checkboxText": "Store User Data hashed",
+                    "simpleValueType": true,
+                    "help": "The User Data will be stored hashed in \u003ci\u003elocalStorage\u003c/i\u003e.",
+                    "enablingConditions": [
+                      {
+                        "paramName": "enableEventEnhancement",
+                        "paramValue": true,
+                        "type": "EQUALS"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "CHECKBOX",
+                "name": "runInitOnce",
+                "checkboxText": "Run the \u0027init\u0027 command only once",
+                "simpleValueType": true,
+                "help": "When Advanced Matching is enabled, the tag runs the \u003ci\u003einit\u003c/i\u003e command with each event to send user information that becomes available after page load.\n\u003cbr/\u003e\u003cbr/\u003e\nThis causes the following message in the Console from the fbevents.js file:\n\u003ci\u003e[Meta Pixel] - Duplicate Pixel ID: {Pixel ID}.\u003c/i\u003e\n\u003cbr/\u003e\u003cbr/\u003e\nEnable this option to skip repeated \u003ci\u003einit\u003c/i\u003e calls and suppress the Console message. Note that Advanced Matching data found after the first call won’t be sent."
+              }
+            ],
+            "enablingConditions": [
+              {
+                "paramName": "enableEdvancedMatching",
+                "paramValue": true,
+                "type": "EQUALS"
+              }
+            ]
+          }
+        ],
+        "defaultValue": true
       }
     ]
   },
