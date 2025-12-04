@@ -1,33 +1,41 @@
 # Facebook Pixel by Stape for Google Tag Manager Web
 
-The **Facebook Pixel by Stape** tag integrates Meta Pixel into your website via Google Tag Manager Web container. It allows sending standard or custom events to Meta (Facebook), including enhanced conversions and user data for improved attribution.
+The **Facebook Pixel by Stape** tag integrates Meta Pixel into your website via Google Tag Manager Web container. It allows sending standard or custom events to Meta (Facebook), including enhanced conversions and user data for improved attribution. It also supports the Signals Gateway Pixel.
 
 ## How to Use
 
 1. Add the **Facebook Pixel by Stape** tag to your Web GTM container.
-2. Enter one or more **Facebook Pixel IDs** (comma-separated).
-3. Choose how the **Event Name** is defined:
-   - **Inherit from Data Layer** — maps GTM/GA4 event names to Meta equivalents.
-   - **Override** — choose from standard events or provide a custom event name.
-4. Enable **Automatic Data Layer Mapping** (recommended) to parse GA4, UA, and Common Event Data formats.
-5. (Optional) Enable **Advanced Matching** to securely pass user data (e.g., email, phone) to Meta for better match rates.
-6. (Optional) Enable **Event Enhancement** to store and reuse user data via `localStorage` across sessions.
-7. (Optional) Configure **Consent Settings** using either GTM Consent Mode or manual control.
-8. (Optional) Activate **Limited Data Use (LDU)** for California data compliance and specify Country/State codes.
-9. (Optional) Enable **Server-Side Tracking Support** using Event ID and Data Layer push for deduplication with Conversions API.
-10. Adjust **Settings** for automatic configuration (automatic events collection, such as button clicks and page metadata capture) and history event tracking (mainly for SPA websites).
+2. Select the **Installation Method**:
+   - **Facebook Pixel Only** (default) - for standard client-side tracking.
+   - **Facebook Pixel + Signals Gateway Pixel** - for a more resilient setup using a first-party endpoint.
+3. Enter one or more **Facebook Pixel IDs** (comma-separated).
+4. Choose how the **Event Name** is defined:
+   - **Inherit from Data Layer** - maps GTM/GA4 event names to Meta equivalents.
+   - **Override** - choose from standard events or provide a custom event name.
+5. Enable **Automatic Data Layer Mapping** (recommended) to parse GA4, UA, and Common Event Data formats.
+6. (Optional) Enable **Advanced Matching** to securely pass user data (e.g., email, phone) to Meta for better match rates.
+7. (Optional) Enable **Event Enhancement** to store and reuse user data via `localStorage` across sessions.
+8. (Optional) Configure **Consent Settings** using either GTM Consent Mode or manual control.
+9. (Optional) Activate **Limited Data Use (LDU)** for California data compliance and specify Country/State codes.
+10. (Optional) Enable **Server-Side Tracking Support** using Event ID and Data Layer push for deduplication with Conversions API or Signals Gateway Pixel.
+11. Adjust **Settings** for automatic configuration (automatic events collection, such as button clicks and page metadata capture) and history event tracking (mainly for SPA websites).
 
 ## Event Name Setup Options
 
 - **Standard Events** (when overriding):
   - `PageView`, `AddToCart`, `Purchase`, `Lead`, `ViewContent`, etc.
 - **Inherit from Client** (default):
-  - Maps GA4 events like `purchase`, `add_to_cart`, `sign_up`, etc., to Meta equivalents.
+  - Maps GA4 events like `purchase`, `add_to_cart`, `sign_up`, etc. to Meta equivalents.
 
 ## Required Fields
 
 - **Facebook Pixel ID(s)** — must be a numeric string or comma-separated list.
 - **Event Name** — must be resolved either from Data Layer or override settings.
+
+When using the **Facebook Pixel + Signals Gateway Pixel** installation type, the following fields are also required:
+- **Signals Gateway Pixel ID**
+- **Signals Gateway Pixel Host**
+- **Signals Gateway Pixel Script URL**
 
 ## Features
 
@@ -76,6 +84,12 @@ Includes support for:
 
 - Disable automatic `fbq('set','autoConfig')`, which disables automatic events such as button clicks and page metadata capture.
 - Disable PageView automatic tracking on SPA websites.
+
+### Signals Gateway Pixel
+
+The tag supports the Signals Gateway Pixel, which allows for a more resilient tracking setup by sending events through a first-party endpoint. To use it, select the **Facebook Pixel + Signals Gateway Pixel** installation type and provide your Signals Gateway Pixel ID, Host, and Script URL.
+
+Learn more: [Signals Gateway](https://developers.facebook.com/docs/marketing-api/gateway-products/signals-gateway) and [Signals Gateway Pixel in Google Tag Manager](https://developers.facebook.com/docs/marketing-api/gateway-products/signals-gateway/pixel-setup-google-tag-manager).
 
 ## Open Source
 
