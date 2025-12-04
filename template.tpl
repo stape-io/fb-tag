@@ -26,7 +26,7 @@ ___INFO___
     "displayName": "stape.io",
     "thumbnail": "data:image/png;base64,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MYEFAJCYwAIASExgAQAkJrAAABITWAAAiQksAIDEBBYAQGICCwAgMYEFAJDYZAAwMucXi/jM/1iOO6/rxB1Hu3HrNd3YPxOxazpiotOJNlteKWJ+OWKu/D145lwRT54p4v8+3Y/zC0VA2wgsgBFaKAPjC7+//MLn+8q4OrqvG0f3Rhwpn4/srT7vxLXl46ZD5eNgd/XjXeW79XT5mJkq37i79QmxomyjXhlOCysRi+V/1mIv4szFIo7NFvHU2X48Vz6fvlDE8fMRJ+b65aOIk+fLH98LaDWBBTBGc4vVox/fO1V91l/3x1RRdXCmEwd3d+LArogDu7txeE/EofLzQ+XzwfLzQ7vLWCu/b890p4y2TuwtJ2Izq1HWid3l81T1mIio0qxbTsomJ9b+2b1+Ef3yX1s+xXL5vPR8JC2uBlOx+uu7uFSsTt4ulh+fK6dNZ+eLODcfcboMqTNlPFVBVU2hqm+bLX9cbyUgewILoOaqydDxMnaOz106SusHUG+W3AEAEhNYAACJCSwAgMQEFgBAYgILACAxgQUAkJjAAgBITGABACQmsAAAEhNYAACJCSwAgMQEFgBAYgILACAxgQUAkJjAAgBITGABACQmsAAAEhNYAACJCSwAgMQEFgBAYgILACAxgQUAkJjAAgBITGABACQmsAAAEhNYAACJCSwAgMQEFgBAYgILACAxgQUAkJjAAgBITGABACQmsAAAEhNYAACJCSwAgMQEFgBAYgILACAxgQUAkJjAAgBITGABACQmsAAAEhNYAACJCSwAgMQEFgBAYgILACAxgQUAkJjAAgBITGABACQmsAAAEhNYAACJCSwAgMQEFgBAYgILACAxgQUAkJjAAgBITGABACQmsAAAEhNYAACJCSwAgMQEFgBAYgILACAxgQUAkJjAAgBITGABACQmsAAAEhNYAACJCSwAgMQEFgBAYgILACAxgQUAkJjAAgBITGABACQmsAAAEhNYAACJCSwAgMQEFgBAYgILACAxgQUAkJjAAgBITGABACQmsAAAEhNYAACJCSwAgMQEFgBAYgILACAxgQUAkJjAAgBITGABACQmsAAAEhNYAACJCSwAgMQEFgBAYgILACAxgQUAkJjAAgBITGABACQmsAAAEhNYAACJCSwAgMQEFgBAYgILACAxgQUAkJjAAgBITGABACQmsAAAEhNYAACJCSwAgMQEFgBAYgILACAxgQUAkJjAAgBITGABACQmsAAAEhNYAACJCSwAgMQEFgBAYgILACAxgQUAkJjAAgBI7M8AEVZ9YYB+7i0AAAAASUVORK5CYII\u003d"
   },
-  "description": "Integrates the Facebook/Meta Pixel into the page and allows easy event tracking.",
+  "description": "Integrates the Facebook/Meta Pixel into the page and allows easy event tracking. It also supports the Signals Gateway Pixel.",
   "containerContexts": [
     "WEB"
   ]
@@ -40,6 +40,21 @@ ___TEMPLATE_PARAMETERS___
     "type": "GROUP",
     "name": "baseConfigurationGroup",
     "subParams": [
+      {
+        "type": "SELECT",
+        "name": "installationType",
+        "displayName": "Installation Type",
+        "macrosInSelect": false,
+        "selectItems": [
+          {
+            "value": "regularAndSignals",
+            "displayValue": "Facebook Pixel + Signals Gateway Pixel"
+          }
+        ],
+        "simpleValueType": true,
+        "notSetText": "Facebook Pixel Only",
+        "help": "Choose the installation type: Facebook Pixel only, or Facebook Pixel and Signals Gateway Pixel.\n\u003cbr/\u003e\nLearn more about the Signals Gateway Pixel: \u003ca href\u003d\"https://developers.facebook.com/docs/marketing-api/gateway-products/signals-gateway\"\u003e[1]\u003c/a\u003e and \u003ca href\u003d\"https://developers.facebook.com/docs/marketing-api/gateway-products/signals-gateway/pixel-setup-google-tag-manager\"\u003e[2]\u003c/a\u003e."
+      },
       {
         "type": "TEXT",
         "name": "pixelIds",
@@ -56,7 +71,90 @@ ___TEMPLATE_PARAMETERS___
             ]
           }
         ],
-        "help": "Set to a valid Facebook Pixel ID."
+        "help": "Set to a valid Facebook Pixel ID.\n\u003cbr/\u003e\nYou can specify an array, a single Pixel ID or a comma separated string of Pixel IDs.",
+        "enablingConditions": [
+          {
+            "paramName": "installationType",
+            "paramValue": "regularAndSignals",
+            "type": "EQUALS"
+          },
+          {
+            "paramName": "installationType",
+            "paramValue": "",
+            "type": "NOT_PRESENT"
+          }
+        ],
+        "valueHint": "123123...,555777..."
+      },
+      {
+        "type": "GROUP",
+        "name": "signalsPixelGroup",
+        "subParams": [
+          {
+            "type": "TEXT",
+            "name": "signalsPixelId",
+            "displayName": "Signals Gateway Pixel ID",
+            "simpleValueType": true,
+            "valueValidators": [
+              {
+                "type": "NON_EMPTY"
+              },
+              {
+                "type": "REGEX",
+                "args": [
+                  "^[0-9,]+$"
+                ]
+              }
+            ],
+            "help": "Set to a valid Signals Gateway Pixel ID. Enter the Signals Gateway Pixel ID as provided by the Signals Gateway Pixel Source in your Signals Gateway.\n\u003cbr/\u003e\nOnly one ID is supported.\n\u003cbr/\u003e\n\u003ca href\u003d\"https://developers.facebook.com/docs/marketing-api/gateway-products/signals-gateway/pixel-setup-google-tag-manager\"\u003eLearn more\u003c/a\u003e.",
+            "valueHint": "98765..."
+          },
+          {
+            "type": "TEXT",
+            "name": "signalsPixelHost",
+            "displayName": "Signals Gateway Pixel Host",
+            "simpleValueType": true,
+            "help": "Enter the Signals Gateway Pixel Host as provided by the Signals Gateway Pixel Source in your Signals Gateway.\n\u003cbr/\u003e\n\u003ca href\u003d\"https://developers.facebook.com/docs/marketing-api/gateway-products/signals-gateway/pixel-setup-google-tag-manager\"\u003eLearn more\u003c/a\u003e.",
+            "valueValidators": [
+              {
+                "type": "NON_EMPTY"
+              },
+              {
+                "type": "REGEX",
+                "args": [
+                  "^https?:\\/\\/.+"
+                ]
+              }
+            ],
+            "valueHint": "https://sgw.example.com/"
+          },
+          {
+            "type": "TEXT",
+            "name": "signalsPixelScriptURL",
+            "displayName": "Signals Gateway Pixel Script URL",
+            "simpleValueType": true,
+            "help": "Enter the Signals Gateway Pixel Script URL as provided by the Signals Gateway Pixel Source in your Signals Gateway.\n\u003cbr/\u003e\n\u003ca href\u003d\"https://developers.facebook.com/docs/marketing-api/gateway-products/signals-gateway/pixel-setup-google-tag-manager\"\u003eLearn more\u003c/a\u003e.",
+            "valueValidators": [
+              {
+                "type": "NON_EMPTY"
+              },
+              {
+                "type": "REGEX",
+                "args": [
+                  "^https?:\\/\\/.+"
+                ]
+              }
+            ],
+            "valueHint": "https://sgw.example.com/sdk/123456789/events.js"
+          }
+        ],
+        "enablingConditions": [
+          {
+            "paramName": "installationType",
+            "paramValue": "regularAndSignals",
+            "type": "EQUALS"
+          }
+        ]
       },
       {
         "type": "SELECT",
@@ -203,20 +301,22 @@ ___TEMPLATE_PARAMETERS___
         "checkboxText": "Enable automatic User Data and Event Parameters mapping from the Data Layer",
         "simpleValueType": true,
         "help": "If you check this, then the Facebook tag will populate standard Object Properties and User Data automatically from the DataLayer. The tag parses Universal Analytics,  \u003ca target\u003d\"_blank\" href\u003d\"https://developers.google.com/analytics/devguides/collection/ga4/ecommerce\"\u003eGA4\u003c/a\u003e and \u003ca target\u003d\"_blank\" href\u003d\"https://developers.google.com/tag-platform/tag-manager/server-side/common-event-data\"\u003eCommon Event Data\u003c/a\u003e formats.",
-        "defaultValue": true
-      },
-      {
-        "type": "CHECKBOX",
-        "name": "enableCurrentDataLayerOnly",
-        "checkboxText": "Use data only from the most recent Data Layer event where the data can be found (ignore recursive merges)",
-        "simpleValueType": true,
-        "help": "If enabled, the tag will take data only from the most recent Data Layer event where the data can be found. \n\u003cbr/\u003e\u003cbr/\u003e\nIn other words, the tag will ignore recursive merges for Data Layer variables and take only the most recent value of the data. \u003ca href\u003d\"https://www.simoahava.com/gtm-tips/data-layer-variable-versions-explained/\"\u003eLearn more\u003c/a\u003e.\n\u003cbr/\u003e\nThat\u0027s how it worked in the old Facebook pixel tag.",
-        "defaultValue": false,
-        "enablingConditions": [
+        "defaultValue": true,
+        "subParams": [
           {
-            "paramName": "enableDataLayerMapping",
-            "paramValue": true,
-            "type": "EQUALS"
+            "type": "CHECKBOX",
+            "name": "enableCurrentDataLayerOnly",
+            "checkboxText": "Use data only from the most recent Data Layer event where the data can be found (ignore recursive merges)",
+            "simpleValueType": true,
+            "help": "If enabled, the tag will take data only from the most recent Data Layer event where the data can be found. \n\u003cbr/\u003e\u003cbr/\u003e\nIn other words, the tag will ignore recursive merges for Data Layer variables and take only the most recent value of the data. \u003ca href\u003d\"https://www.simoahava.com/gtm-tips/data-layer-variable-versions-explained/\"\u003eLearn more\u003c/a\u003e.\n\u003cbr/\u003e\u003cbr/\u003e\nThat\u0027s how it worked in the old Facebook pixel tag.",
+            "defaultValue": false,
+            "enablingConditions": [
+              {
+                "paramName": "enableDataLayerMapping",
+                "paramValue": true,
+                "type": "EQUALS"
+              }
+            ]
           }
         ]
       },
@@ -297,7 +397,7 @@ ___TEMPLATE_PARAMETERS___
           }
         ],
         "simpleValueType": true,
-        "help": "Setting Consent Granted to \u003cstrong\u003efalse\u003c/strong\u003e will prevent the pixel from sending hits until tag fired with Consent Granted \u003cstrong\u003etrue\u003c/strong\u003e. More info \u003ca href\u003d\"hhttps://developers.facebook.com/docs/meta-pixel/implementation/gdpr\"\u003eby this link\u003c/a\u003e.",
+        "help": "Setting Consent Granted to \u003cstrong\u003efalse\u003c/strong\u003e will prevent the pixel from sending hits until tag fired with Consent Granted \u003cstrong\u003etrue\u003c/strong\u003e.\n\u003cbr/\u003e\n\u003ca href\u003d\"hhttps://developers.facebook.com/docs/meta-pixel/implementation/gdpr\"\u003eLearn more\u003c/a\u003e.",
         "enablingConditions": [
           {
             "paramName": "enableConsentMode",
@@ -309,16 +409,16 @@ ___TEMPLATE_PARAMETERS___
       {
         "type": "CHECKBOX",
         "name": "enableConsentMode",
-        "checkboxText": "Enable GTM consent mode support",
+        "checkboxText": "Enable Google Consent Mode support",
         "simpleValueType": true,
-        "help": "If enabled, the tag will check for ad_storage, and if it not granted, it will set the Facebook pixel consent to revoke. After the consent is granted, it will automatically execute fbq(\u0027consent\u0027, \u0027grant\u0027);"
+        "help": "When enabled, this tag checks for the Google Consent Mode \u003ci\u003ead_storage\u003c/i\u003e consent.\n\u003cbr/\u003e\nIf consent is not granted, the Facebook Pixel consent is set as revoked. \n\u003cbr/\u003e\nIf consent is granted (initially or later), the pixel consent is automatically granted."
       },
       {
         "type": "CHECKBOX",
         "name": "dpoLDU",
         "checkboxText": "Limited Data Use (LDU)",
         "simpleValueType": true,
-        "help": "Limited Data Use is a data processing option that gives you more control over how your data is used in Meta’s systems. More info \u003ca target\u003d\"_blank\" href\u003d\"https://developers.facebook.com/docs/meta-pixel/implementation/data-processing-options\"\u003eby this link\u003c/a\u003e."
+        "help": "Limited Data Use is a data processing option that gives you more control over how your data is used in Meta’s systems. \u003ca target\u003d\"_blank\" href\u003d\"https://developers.facebook.com/docs/meta-pixel/implementation/data-processing-options\"\u003eLearn more\u003c/a\u003e."
       },
       {
         "type": "TEXT",
@@ -524,7 +624,7 @@ ___TEMPLATE_PARAMETERS___
         "name": "eventId",
         "displayName": "Event ID",
         "simpleValueType": true,
-        "help": "Set the Event ID parameter in case you are tracking the same event server-side as well. The Event ID can be used to deduplicate the same event if sent from multiple sources. See more \u003ca href\u003d\"https://developers.facebook.com/docs/marketing-api/conversions-api/deduplicate-pixel-and-server-events/\"\u003ehere\u003c/a\u003e."
+        "help": "Set the Event ID parameter in case you are tracking the same event via server-side using the Meta Conversions API or if using Signals Gateway Pixel.\n\u003cbr/\u003e\nWhen using the Signals Gateway Pixel, the Event ID will be automatically added if not set.\n\u003cbr/\u003e\nThe Event ID can be used to deduplicate the same event if sent from multiple sources. \n\u003cbr/\u003e\n\u003ca href\u003d\"https://developers.facebook.com/docs/marketing-api/conversions-api/deduplicate-pixel-and-server-events/\"\u003eLearn more\u003c/a\u003e."
       },
       {
         "type": "GROUP",
@@ -601,7 +701,7 @@ ___TEMPLATE_PARAMETERS___
         "name": "disablePushState",
         "checkboxText": "Disable History Event Tracking",
         "simpleValueType": true,
-        "help": "The Facebook Pixel automatically tracks history events (pushState and replaceState) as PageViews. Check this box to disable this automatic tracking."
+        "help": "The Facebook Pixel automatically tracks history events (pushState and replaceState) as PageViews. \n\u003cbr/\u003e\u003cbr/\u003e\nCheck this box to \u003cb\u003edisable\u003c/b\u003e this automatic tracking. Make sure to implement it manually instead.\n\u003cbr/\u003e\u003cbr/\u003e\nDisabling it can be useful to deduplicate the \u003ci\u003ePageview\u003c/i\u003e event when using the Meta Conversions API. This way you can make sure to send the correct Event ID in both web and server events."
       }
     ]
   }
@@ -616,6 +716,8 @@ const callInWindow = require('callInWindow');
 const copyFromDataLayer = require('copyFromDataLayer');
 const copyFromWindow = require('copyFromWindow');
 const createQueue = require('createQueue');
+const getTimestampMillis = require('getTimestampMillis');
+const generateRandom = require('generateRandom');
 const getType = require('getType');
 const injectScript = require('injectScript');
 const isConsentGranted = require('isConsentGranted');
@@ -632,18 +734,46 @@ const sha256 = require('sha256');
 /*==============================================================================
 ==============================================================================*/
 
-const partnerName = 'stape-gtm-1.1.0';
-const queueName = 'fbq';
-const queue = getQueue(queueName);
-const initIds = copyFromWindow('_meta_gtm_ids') || [];
-const ecommerceDataLayer = copyFromDataLayer('ecommerce', 1);
-const dataLayerVersion = data.enableCurrentDataLayerOnly ? 1 : 2;
+const useSignalsPixel = data.installationType === 'regularAndSignals';
+const partnerName = 'stape-gtm-2.0.0' + (useSignalsPixel ? '-sgw' : '');
 
-setConsent();
-sendEvent();
-sendDataLayerPush();
+const metaPixelQueueName = 'fbq';
+const signalsPixelQueueName = 'cbq';
+const queuesConfig = [
+  {
+    queue: getQueue(metaPixelQueueName),
+    name: metaPixelQueueName,
+    pixelIds: getType(data.pixelIds) === 'string' ? data.pixelIds.split(',') : data.pixelIds
+  }
+];
+if (useSignalsPixel) {
+  queuesConfig.push({
+    queue: getQueue(signalsPixelQueueName),
+    name: signalsPixelQueueName,
+    pixelIds: [data.signalsPixelId],
+    isSignalsPixelQueue: true
+  });
+}
 
-injectScript('https://connect.facebook.net/en_US/fbevents.js', data.gtmOnSuccess, data.gtmOnFailure, 'metaPixel');
+const eventConfig = {
+  eventName: getEventName(data),
+  userData: getUserData(data),
+  eventId: !data.eventId && useSignalsPixel ? getTimestampMillis() + '.' + random().toString(36).substring(2, 11) : data.eventId
+};
+eventConfig.command = getCommand(eventConfig.eventName);
+eventConfig.eventData = getEventData(data, eventConfig.eventName);
+
+queuesConfig.forEach((queueConfig) => {
+  const queue = queueConfig.queue;
+  const queueName = queueConfig.name;
+  const pixelIds = queueConfig.pixelIds;
+  const isSignalsPixelQueue = queueConfig.isSignalsPixelQueue;
+
+  setConsent(data, queue);
+  sendEvent(data, eventConfig, queue, queueName, pixelIds, isSignalsPixelQueue);
+});
+sendDataLayerPush(data, eventConfig.eventId);
+loadScripts(data, useSignalsPixel);
 
 /*==============================================================================
   Vendor related functions
@@ -670,7 +800,7 @@ function getQueue(queueName) {
   return copyFromWindow(queueName);
 }
 
-function setConsent() {
+function setConsent(data, queue) {
   if (data.dpoLDU) {
     queue('dataProcessingOptions', ['LDU'], makeNumber(data.dpoCountry), makeNumber(data.dpoState));
   }
@@ -680,11 +810,9 @@ function setConsent() {
       queue('consent', 'revoke');
 
       let wasCalled = false;
-
       addConsentListener('ad_storage', (consentType, granted) => {
         if (wasCalled || consentType !== 'ad_storage' || !granted) return;
         wasCalled = true;
-
         queue('consent', 'grant');
       });
 
@@ -692,14 +820,13 @@ function setConsent() {
     }
 
     queue('consent', 'grant');
-
     return;
   }
 
   queue('consent', data.consent === false ? 'revoke' : 'grant');
 }
 
-function setSettings(pixelId) {
+function setSettings(data, queue, queueName, pixelId) {
   if (data.disableAutoConfig) {
     queue('set', 'autoConfig', false, pixelId);
   }
@@ -709,37 +836,52 @@ function setSettings(pixelId) {
   }
 }
 
-function sendEvent() {
-  const pixelIds = data.pixelIds;
-  const eventName = getEventName();
-  const command = getCommand(eventName);
-  const eventData = getEventData(eventName);
-  const userData = getUserData();
+function sendEvent(data, eventConfig, queue, queueName, pixelIds, isSignalsPixelQueue) {
+  const eventName = eventConfig.eventName;
+  const command = eventConfig.command;
+  const eventData = eventConfig.eventData;
+  const userData = eventConfig.userData;
+  const eventId = eventConfig.eventId;
 
-  pixelIds.split(',').forEach((pixelId) => {
-    const isNotInitialized = initIds.indexOf(pixelId) === -1;
+  const initIdsGlobalVariableName = isSignalsPixelQueue ? '_meta_gtm_signals_gateway_ids' : '_meta_gtm_ids';
+  const initIds = copyFromWindow(initIdsGlobalVariableName) || [];
 
-    if (isNotInitialized) {
+  pixelIds.forEach((pixelId) => {
+    const isPixelIdNotInitialized = initIds.indexOf(pixelId) === -1;
+
+    if (isPixelIdNotInitialized) {
       initIds.push(pixelId);
-      setInWindow('_meta_gtm_ids', initIds, true);
-      setSettings();
+      setInWindow(initIdsGlobalVariableName, initIds, true);
+
+      if (isSignalsPixelQueue) {
+        queue('setHost', data.signalsPixelHost);
+        // .toString is a way to circuvemnt the current impossility of setting a string on 'integrationMethod'.
+        queue('set', 'integrationMethod', { toString: () => partnerName });
+      }
+      setSettings(data, queue, queueName, pixelId);
     }
 
-    if (isNotInitialized || (data.enableEdvancedMatching && !data.runInitOnce)) queue('init', pixelId, userData);
-    queue('set', 'agent', partnerName, pixelId);
-    queue(command, pixelId, eventName, eventData, data.eventId ? { eventID: data.eventId } : undefined);
+    if (isPixelIdNotInitialized || (data.enableEdvancedMatching && !data.runInitOnce)) queue('init', pixelId, userData);
+
+    if (!isSignalsPixelQueue) queue('set', 'agent', partnerName, pixelId);
+
+    // Loads the Signals Pixel ID configuration if the Signals Pixel Script URL does not contain this Pixel ID.
+    if (isSignalsPixelQueue && data.signalsPixelScriptURL.indexOf(pixelId) === -1) queue('loadConfig', pixelId);
+
+    queue(command, pixelId, eventName, eventData, eventId ? { eventID: eventId } : undefined);
   });
 }
 
-function getEventName() {
+function getEventName(data) {
   if (data.inheritEventName === 'inherit') {
     let eventName = copyFromDataLayer('event');
 
     if (!eventName) {
-      if (ecommerceDataLayer.detail) eventName = 'ViewContent';
-      else if (ecommerceDataLayer.add) eventName = 'AddToCart';
-      else if (ecommerceDataLayer.checkout) eventName = 'InitiateCheckout';
-      else if (ecommerceDataLayer.purchase) eventName = 'Purchase';
+      const ecommerce = copyFromDataLayer('ecommerce', 1);
+      if (ecommerce.detail) eventName = 'ViewContent';
+      else if (ecommerce.add) eventName = 'AddToCart';
+      else if (ecommerce.checkout) eventName = 'InitiateCheckout';
+      else if (ecommerce.purchase) eventName = 'Purchase';
     }
 
     const mapFacebookEventName = {
@@ -814,7 +956,7 @@ function getCommand(eventName) {
     : 'trackSingle';
 }
 
-function getUserData() {
+function getUserData(data) {
   if (!data.enableEdvancedMatching) {
     return;
   }
@@ -822,7 +964,7 @@ function getUserData() {
   let userData = {};
 
   if (data.enableEventEnhancement) {
-    userData = getEventEnhancement(userData);
+    userData = getEventEnhancement();
   }
 
   if (data.enableDataLayerMapping) {
@@ -846,13 +988,13 @@ function getUserData() {
   }
 
   if (data.enableEventEnhancement) {
-    storeEventEnhancement(userData);
+    storeEventEnhancement(data, userData);
   }
 
   return userData;
 }
 
-function getEventData(eventName) {
+function getEventData(data, eventName) {
   let objectProperties = {};
 
   if (data.enableDataLayerMapping) {
@@ -880,10 +1022,8 @@ function getEventData(eventName) {
 function getEventEnhancement() {
   if (localStorage) {
     const gtmeec = localStorage.getItem('gtmeec');
-
     if (gtmeec) {
       const gtmeecParsed = JSON.parse(gtmeec);
-
       if (getType(gtmeecParsed) === 'object') {
         return gtmeecParsed;
       }
@@ -955,19 +1095,19 @@ function storeUserDataInLocalStorage(userData) {
   localStorage.setItem('gtmeec', gtmeec);
 }
 
-function storeEventEnhancement(userData) {
+function storeEventEnhancement(data, userData) {
   if (localStorage && objHasProps(userData)) {
     if (!data.storeUserDataHashed) storeUserDataInLocalStorage(userData);
     else hashUserDataFields(userData, storeUserDataInLocalStorage);
   }
 }
 
-function sendDataLayerPush() {
+function sendDataLayerPush(data, eventId) {
   if (data.dataLayerEventPush) {
     const dataLayerQueueName = data.dataLayerVariableName || 'dataLayer';
     const dataLayerPush = createQueue(dataLayerQueueName);
 
-    dataLayerPush({ eventId: data.eventId, event: data.dataLayerEventName || 'DefaultTagEvent' });
+    dataLayerPush({ eventId: eventId, event: data.dataLayerEventName || 'DefaultTagEvent' });
   }
 }
 
@@ -1133,12 +1273,67 @@ function getGA4EventData(eventName, objectProperties, ecommerce) {
 }
 
 function getDL(name) {
+  const dataLayerVersion = data.enableCurrentDataLayerOnly ? 1 : 2;
   return copyFromDataLayer(name, dataLayerVersion);
+}
+
+function loadScripts(data, useSignalsPixel) {
+  const asyncScriptLoadManager = getAsyncScriptLoadManager(data);
+
+  asyncScriptLoadManager.onScriptLoadStart();
+  injectScript('https://connect.facebook.net/en_US/fbevents.js', asyncScriptLoadManager.onScriptLoadSuccess, asyncScriptLoadManager.onScriptLoadFailure, 'metaPixel');
+
+  if (useSignalsPixel) {
+    asyncScriptLoadManager.onScriptLoadStart();
+    injectScript(
+      'https://stapecdn.com/sgw/v1.js',
+      () => {
+        asyncScriptLoadManager.onScriptLoadStart();
+        callInWindow('metaSGWScriptLoader', data.signalsPixelScriptURL, asyncScriptLoadManager.onScriptLoadSuccess, asyncScriptLoadManager.onScriptLoadFailure);
+        asyncScriptLoadManager.onScriptLoadSuccess(); // Must be called after invoking the sgwScriptLoader function.
+      },
+      asyncScriptLoadManager.onScriptLoadFailure,
+      'signalsGatewayPixel'
+    );
+  }
 }
 
 /*==============================================================================
   Helpers
 ==============================================================================*/
+
+/**
+ * The asyncScriptLoadManager helper object is used to handle multiple asynchronous script injections.
+ * It ensures that the tag execution status is reported only after all scripts have finished loading.
+ */
+function getAsyncScriptLoadManager(data) {
+  const asyncScriptLoadManager = {
+    pendingInjectScriptCalls: 0,
+    someFailed: false,
+    onScriptLoadStart: () => {
+      asyncScriptLoadManager.pendingInjectScriptCalls++;
+    },
+    onScriptLoadSuccess: () => {
+      asyncScriptLoadManager.maybeFinalize();
+    },
+    onScriptLoadFailure: () => {
+      asyncScriptLoadManager.someFailed = true;
+      asyncScriptLoadManager.maybeFinalize();
+    },
+    maybeFinalize: () => {
+      asyncScriptLoadManager.pendingInjectScriptCalls--;
+      if (asyncScriptLoadManager.pendingInjectScriptCalls === 0) {
+        return asyncScriptLoadManager.someFailed ? data.gtmOnFailure() : data.gtmOnSuccess();
+      }
+    }
+  };
+
+  return asyncScriptLoadManager;
+}
+
+function random() {
+  return generateRandom(1000000000000000, 10000000000000000) / 10000000000000000;
+}
 
 function mergeObjects(obj1, obj2) {
   Object.keys(obj2).forEach((key) => {
@@ -1539,6 +1734,318 @@ ___WEB_PERMISSIONS___
                     "boolean": true
                   }
                 ]
+              },
+              {
+                "type": 3,
+                "mapKey": [
+                  {
+                    "type": 1,
+                    "string": "key"
+                  },
+                  {
+                    "type": 1,
+                    "string": "read"
+                  },
+                  {
+                    "type": 1,
+                    "string": "write"
+                  },
+                  {
+                    "type": 1,
+                    "string": "execute"
+                  }
+                ],
+                "mapValue": [
+                  {
+                    "type": 1,
+                    "string": "cbq"
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  },
+                  {
+                    "type": 8,
+                    "boolean": false
+                  }
+                ]
+              },
+              {
+                "type": 3,
+                "mapKey": [
+                  {
+                    "type": 1,
+                    "string": "key"
+                  },
+                  {
+                    "type": 1,
+                    "string": "read"
+                  },
+                  {
+                    "type": 1,
+                    "string": "write"
+                  },
+                  {
+                    "type": 1,
+                    "string": "execute"
+                  }
+                ],
+                "mapValue": [
+                  {
+                    "type": 1,
+                    "string": "_meta_gtm_signals_gateway_ids"
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  },
+                  {
+                    "type": 8,
+                    "boolean": false
+                  }
+                ]
+              },
+              {
+                "type": 3,
+                "mapKey": [
+                  {
+                    "type": 1,
+                    "string": "key"
+                  },
+                  {
+                    "type": 1,
+                    "string": "read"
+                  },
+                  {
+                    "type": 1,
+                    "string": "write"
+                  },
+                  {
+                    "type": 1,
+                    "string": "execute"
+                  }
+                ],
+                "mapValue": [
+                  {
+                    "type": 1,
+                    "string": "_cbq"
+                  },
+                  {
+                    "type": 8,
+                    "boolean": false
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  },
+                  {
+                    "type": 8,
+                    "boolean": false
+                  }
+                ]
+              },
+              {
+                "type": 3,
+                "mapKey": [
+                  {
+                    "type": 1,
+                    "string": "key"
+                  },
+                  {
+                    "type": 1,
+                    "string": "read"
+                  },
+                  {
+                    "type": 1,
+                    "string": "write"
+                  },
+                  {
+                    "type": 1,
+                    "string": "execute"
+                  }
+                ],
+                "mapValue": [
+                  {
+                    "type": 1,
+                    "string": "cbq.callMethod.apply"
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  },
+                  {
+                    "type": 8,
+                    "boolean": false
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  }
+                ]
+              },
+              {
+                "type": 3,
+                "mapKey": [
+                  {
+                    "type": 1,
+                    "string": "key"
+                  },
+                  {
+                    "type": 1,
+                    "string": "read"
+                  },
+                  {
+                    "type": 1,
+                    "string": "write"
+                  },
+                  {
+                    "type": 1,
+                    "string": "execute"
+                  }
+                ],
+                "mapValue": [
+                  {
+                    "type": 1,
+                    "string": "cbq.queue.push"
+                  },
+                  {
+                    "type": 8,
+                    "boolean": false
+                  },
+                  {
+                    "type": 8,
+                    "boolean": false
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  }
+                ]
+              },
+              {
+                "type": 3,
+                "mapKey": [
+                  {
+                    "type": 1,
+                    "string": "key"
+                  },
+                  {
+                    "type": 1,
+                    "string": "read"
+                  },
+                  {
+                    "type": 1,
+                    "string": "write"
+                  },
+                  {
+                    "type": 1,
+                    "string": "execute"
+                  }
+                ],
+                "mapValue": [
+                  {
+                    "type": 1,
+                    "string": "cbq.queue"
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  },
+                  {
+                    "type": 8,
+                    "boolean": false
+                  }
+                ]
+              },
+              {
+                "type": 3,
+                "mapKey": [
+                  {
+                    "type": 1,
+                    "string": "key"
+                  },
+                  {
+                    "type": 1,
+                    "string": "read"
+                  },
+                  {
+                    "type": 1,
+                    "string": "write"
+                  },
+                  {
+                    "type": 1,
+                    "string": "execute"
+                  }
+                ],
+                "mapValue": [
+                  {
+                    "type": 1,
+                    "string": "cbq.disablePushState"
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  },
+                  {
+                    "type": 8,
+                    "boolean": false
+                  }
+                ]
+              },
+              {
+                "type": 3,
+                "mapKey": [
+                  {
+                    "type": 1,
+                    "string": "key"
+                  },
+                  {
+                    "type": 1,
+                    "string": "read"
+                  },
+                  {
+                    "type": 1,
+                    "string": "write"
+                  },
+                  {
+                    "type": 1,
+                    "string": "execute"
+                  }
+                ],
+                "mapValue": [
+                  {
+                    "type": 1,
+                    "string": "metaSGWScriptLoader"
+                  },
+                  {
+                    "type": 8,
+                    "boolean": false
+                  },
+                  {
+                    "type": 8,
+                    "boolean": false
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  }
+                ]
               }
             ]
           }
@@ -1586,6 +2093,10 @@ ___WEB_PERMISSIONS___
               {
                 "type": 1,
                 "string": "https://connect.facebook.net/en_US/fbevents.js"
+              },
+              {
+                "type": 1,
+                "string": "https://stapecdn.com/sgw/*"
               }
             ]
           }

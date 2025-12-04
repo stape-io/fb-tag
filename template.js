@@ -4,6 +4,8 @@ const callInWindow = require('callInWindow');
 const copyFromDataLayer = require('copyFromDataLayer');
 const copyFromWindow = require('copyFromWindow');
 const createQueue = require('createQueue');
+const getTimestampMillis = require('getTimestampMillis');
+const generateRandom = require('generateRandom');
 const getType = require('getType');
 const injectScript = require('injectScript');
 const isConsentGranted = require('isConsentGranted');
@@ -20,18 +22,46 @@ const sha256 = require('sha256');
 /*==============================================================================
 ==============================================================================*/
 
-const partnerName = 'stape-gtm-1.1.0';
-const queueName = 'fbq';
-const queue = getQueue(queueName);
-const initIds = copyFromWindow('_meta_gtm_ids') || [];
-const ecommerceDataLayer = copyFromDataLayer('ecommerce', 1);
-const dataLayerVersion = data.enableCurrentDataLayerOnly ? 1 : 2;
+const useSignalsPixel = data.installationType === 'regularAndSignals';
+const partnerName = 'stape-gtm-2.0.0' + (useSignalsPixel ? '-sgw' : '');
 
-setConsent();
-sendEvent();
-sendDataLayerPush();
+const metaPixelQueueName = 'fbq';
+const signalsPixelQueueName = 'cbq';
+const queuesConfig = [
+  {
+    queue: getQueue(metaPixelQueueName),
+    name: metaPixelQueueName,
+    pixelIds: getType(data.pixelIds) === 'string' ? data.pixelIds.split(',') : data.pixelIds
+  }
+];
+if (useSignalsPixel) {
+  queuesConfig.push({
+    queue: getQueue(signalsPixelQueueName),
+    name: signalsPixelQueueName,
+    pixelIds: [data.signalsPixelId],
+    isSignalsPixelQueue: true
+  });
+}
 
-injectScript('https://connect.facebook.net/en_US/fbevents.js', data.gtmOnSuccess, data.gtmOnFailure, 'metaPixel');
+const eventConfig = {
+  eventName: getEventName(data),
+  userData: getUserData(data),
+  eventId: !data.eventId && useSignalsPixel ? getTimestampMillis() + '.' + random().toString(36).substring(2, 11) : data.eventId
+};
+eventConfig.command = getCommand(eventConfig.eventName);
+eventConfig.eventData = getEventData(data, eventConfig.eventName);
+
+queuesConfig.forEach((queueConfig) => {
+  const queue = queueConfig.queue;
+  const queueName = queueConfig.name;
+  const pixelIds = queueConfig.pixelIds;
+  const isSignalsPixelQueue = queueConfig.isSignalsPixelQueue;
+
+  setConsent(data, queue);
+  sendEvent(data, eventConfig, queue, queueName, pixelIds, isSignalsPixelQueue);
+});
+sendDataLayerPush(data, eventConfig.eventId);
+loadScripts(data, useSignalsPixel);
 
 /*==============================================================================
   Vendor related functions
@@ -58,7 +88,7 @@ function getQueue(queueName) {
   return copyFromWindow(queueName);
 }
 
-function setConsent() {
+function setConsent(data, queue) {
   if (data.dpoLDU) {
     queue('dataProcessingOptions', ['LDU'], makeNumber(data.dpoCountry), makeNumber(data.dpoState));
   }
@@ -68,11 +98,9 @@ function setConsent() {
       queue('consent', 'revoke');
 
       let wasCalled = false;
-
       addConsentListener('ad_storage', (consentType, granted) => {
         if (wasCalled || consentType !== 'ad_storage' || !granted) return;
         wasCalled = true;
-
         queue('consent', 'grant');
       });
 
@@ -80,14 +108,13 @@ function setConsent() {
     }
 
     queue('consent', 'grant');
-
     return;
   }
 
   queue('consent', data.consent === false ? 'revoke' : 'grant');
 }
 
-function setSettings(pixelId) {
+function setSettings(data, queue, queueName, pixelId) {
   if (data.disableAutoConfig) {
     queue('set', 'autoConfig', false, pixelId);
   }
@@ -97,37 +124,52 @@ function setSettings(pixelId) {
   }
 }
 
-function sendEvent() {
-  const pixelIds = data.pixelIds;
-  const eventName = getEventName();
-  const command = getCommand(eventName);
-  const eventData = getEventData(eventName);
-  const userData = getUserData();
+function sendEvent(data, eventConfig, queue, queueName, pixelIds, isSignalsPixelQueue) {
+  const eventName = eventConfig.eventName;
+  const command = eventConfig.command;
+  const eventData = eventConfig.eventData;
+  const userData = eventConfig.userData;
+  const eventId = eventConfig.eventId;
 
-  pixelIds.split(',').forEach((pixelId) => {
-    const isNotInitialized = initIds.indexOf(pixelId) === -1;
+  const initIdsGlobalVariableName = isSignalsPixelQueue ? '_meta_gtm_signals_gateway_ids' : '_meta_gtm_ids';
+  const initIds = copyFromWindow(initIdsGlobalVariableName) || [];
 
-    if (isNotInitialized) {
+  pixelIds.forEach((pixelId) => {
+    const isPixelIdNotInitialized = initIds.indexOf(pixelId) === -1;
+
+    if (isPixelIdNotInitialized) {
       initIds.push(pixelId);
-      setInWindow('_meta_gtm_ids', initIds, true);
-      setSettings();
+      setInWindow(initIdsGlobalVariableName, initIds, true);
+
+      if (isSignalsPixelQueue) {
+        queue('setHost', data.signalsPixelHost);
+        // .toString is a way to circuvemnt the current impossility of setting a string on 'integrationMethod'.
+        queue('set', 'integrationMethod', { toString: () => partnerName });
+      }
+      setSettings(data, queue, queueName, pixelId);
     }
 
-    if (isNotInitialized || (data.enableEdvancedMatching && !data.runInitOnce)) queue('init', pixelId, userData);
-    queue('set', 'agent', partnerName, pixelId);
-    queue(command, pixelId, eventName, eventData, data.eventId ? { eventID: data.eventId } : undefined);
+    if (isPixelIdNotInitialized || (data.enableEdvancedMatching && !data.runInitOnce)) queue('init', pixelId, userData);
+
+    if (!isSignalsPixelQueue) queue('set', 'agent', partnerName, pixelId);
+
+    // Loads the Signals Pixel ID configuration if the Signals Pixel Script URL does not contain this Pixel ID.
+    if (isSignalsPixelQueue && data.signalsPixelScriptURL.indexOf(pixelId) === -1) queue('loadConfig', pixelId);
+
+    queue(command, pixelId, eventName, eventData, eventId ? { eventID: eventId } : undefined);
   });
 }
 
-function getEventName() {
+function getEventName(data) {
   if (data.inheritEventName === 'inherit') {
     let eventName = copyFromDataLayer('event');
 
     if (!eventName) {
-      if (ecommerceDataLayer.detail) eventName = 'ViewContent';
-      else if (ecommerceDataLayer.add) eventName = 'AddToCart';
-      else if (ecommerceDataLayer.checkout) eventName = 'InitiateCheckout';
-      else if (ecommerceDataLayer.purchase) eventName = 'Purchase';
+      const ecommerce = copyFromDataLayer('ecommerce', 1);
+      if (ecommerce.detail) eventName = 'ViewContent';
+      else if (ecommerce.add) eventName = 'AddToCart';
+      else if (ecommerce.checkout) eventName = 'InitiateCheckout';
+      else if (ecommerce.purchase) eventName = 'Purchase';
     }
 
     const mapFacebookEventName = {
@@ -202,7 +244,7 @@ function getCommand(eventName) {
     : 'trackSingle';
 }
 
-function getUserData() {
+function getUserData(data) {
   if (!data.enableEdvancedMatching) {
     return;
   }
@@ -210,7 +252,7 @@ function getUserData() {
   let userData = {};
 
   if (data.enableEventEnhancement) {
-    userData = getEventEnhancement(userData);
+    userData = getEventEnhancement();
   }
 
   if (data.enableDataLayerMapping) {
@@ -234,13 +276,13 @@ function getUserData() {
   }
 
   if (data.enableEventEnhancement) {
-    storeEventEnhancement(userData);
+    storeEventEnhancement(data, userData);
   }
 
   return userData;
 }
 
-function getEventData(eventName) {
+function getEventData(data, eventName) {
   let objectProperties = {};
 
   if (data.enableDataLayerMapping) {
@@ -268,10 +310,8 @@ function getEventData(eventName) {
 function getEventEnhancement() {
   if (localStorage) {
     const gtmeec = localStorage.getItem('gtmeec');
-
     if (gtmeec) {
       const gtmeecParsed = JSON.parse(gtmeec);
-
       if (getType(gtmeecParsed) === 'object') {
         return gtmeecParsed;
       }
@@ -343,19 +383,19 @@ function storeUserDataInLocalStorage(userData) {
   localStorage.setItem('gtmeec', gtmeec);
 }
 
-function storeEventEnhancement(userData) {
+function storeEventEnhancement(data, userData) {
   if (localStorage && objHasProps(userData)) {
     if (!data.storeUserDataHashed) storeUserDataInLocalStorage(userData);
     else hashUserDataFields(userData, storeUserDataInLocalStorage);
   }
 }
 
-function sendDataLayerPush() {
+function sendDataLayerPush(data, eventId) {
   if (data.dataLayerEventPush) {
     const dataLayerQueueName = data.dataLayerVariableName || 'dataLayer';
     const dataLayerPush = createQueue(dataLayerQueueName);
 
-    dataLayerPush({ eventId: data.eventId, event: data.dataLayerEventName || 'DefaultTagEvent' });
+    dataLayerPush({ eventId: eventId, event: data.dataLayerEventName || 'DefaultTagEvent' });
   }
 }
 
@@ -521,12 +561,67 @@ function getGA4EventData(eventName, objectProperties, ecommerce) {
 }
 
 function getDL(name) {
+  const dataLayerVersion = data.enableCurrentDataLayerOnly ? 1 : 2;
   return copyFromDataLayer(name, dataLayerVersion);
+}
+
+function loadScripts(data, useSignalsPixel) {
+  const asyncScriptLoadManager = getAsyncScriptLoadManager(data);
+
+  asyncScriptLoadManager.onScriptLoadStart();
+  injectScript('https://connect.facebook.net/en_US/fbevents.js', asyncScriptLoadManager.onScriptLoadSuccess, asyncScriptLoadManager.onScriptLoadFailure, 'metaPixel');
+
+  if (useSignalsPixel) {
+    asyncScriptLoadManager.onScriptLoadStart();
+    injectScript(
+      'https://stapecdn.com/sgw/v1.js',
+      () => {
+        asyncScriptLoadManager.onScriptLoadStart();
+        callInWindow('metaSGWScriptLoader', data.signalsPixelScriptURL, asyncScriptLoadManager.onScriptLoadSuccess, asyncScriptLoadManager.onScriptLoadFailure);
+        asyncScriptLoadManager.onScriptLoadSuccess(); // Must be called after invoking the sgwScriptLoader function.
+      },
+      asyncScriptLoadManager.onScriptLoadFailure,
+      'signalsGatewayPixel'
+    );
+  }
 }
 
 /*==============================================================================
   Helpers
 ==============================================================================*/
+
+/**
+ * The asyncScriptLoadManager helper object is used to handle multiple asynchronous script injections.
+ * It ensures that the tag execution status is reported only after all scripts have finished loading.
+ */
+function getAsyncScriptLoadManager(data) {
+  const asyncScriptLoadManager = {
+    pendingInjectScriptCalls: 0,
+    someFailed: false,
+    onScriptLoadStart: () => {
+      asyncScriptLoadManager.pendingInjectScriptCalls++;
+    },
+    onScriptLoadSuccess: () => {
+      asyncScriptLoadManager.maybeFinalize();
+    },
+    onScriptLoadFailure: () => {
+      asyncScriptLoadManager.someFailed = true;
+      asyncScriptLoadManager.maybeFinalize();
+    },
+    maybeFinalize: () => {
+      asyncScriptLoadManager.pendingInjectScriptCalls--;
+      if (asyncScriptLoadManager.pendingInjectScriptCalls === 0) {
+        return asyncScriptLoadManager.someFailed ? data.gtmOnFailure() : data.gtmOnSuccess();
+      }
+    }
+  };
+
+  return asyncScriptLoadManager;
+}
+
+function random() {
+  return generateRandom(1000000000000000, 10000000000000000) / 10000000000000000;
+}
 
 function mergeObjects(obj1, obj2) {
   Object.keys(obj2).forEach((key) => {

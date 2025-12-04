@@ -1,1 +1,4 @@
-web-gtm-sandboxed-apis.d.ts
+**/.DS_Store
+node_modules
+jsconfig.json
+sgw-loader.min.js
