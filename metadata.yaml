@@ -1,6 +1,8 @@
 homepage: 'https://stape.io/'
 documentation: 'https://github.com/stape-io/fb-tag'
 versions:
+  - sha: ce6118a25adf6e17a94e29b2038238b1c499c907
+    changeNotes: Forced configuration fields to be displayed in UI when the tag is in summary view.
   - sha: 78cccf39e8d4c3e43a169c03c8d77d0b2aff5746
     changeNotes: Organized the base configuration section. Marked Advanced Matching checkbox as default. Added Override as the default Event Name Setup Method.
   - sha: a79d9f36badc2cf762155214f2d9ad01bb01d7b5

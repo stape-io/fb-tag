@@ -56,7 +56,8 @@ ___TEMPLATE_PARAMETERS___
             ]
           }
         ],
-        "help": "Set to a valid Facebook Pixel ID."
+        "help": "Set to a valid Facebook Pixel ID.",
+        "alwaysInSummary": true
       },
       {
         "type": "SELECT",
@@ -195,7 +196,8 @@ ___TEMPLATE_PARAMETERS___
             "displayName": "Event Type"
           }
         ],
-        "defaultValue": "override"
+        "defaultValue": "override",
+        "alwaysInSummary": true
       },
       {
         "type": "CHECKBOX",
@@ -203,7 +205,8 @@ ___TEMPLATE_PARAMETERS___
         "checkboxText": "Enable automatic User Data and Event Parameters mapping from the Data Layer",
         "simpleValueType": true,
         "help": "If you check this, then the Facebook tag will populate standard Object Properties and User Data automatically from the DataLayer. The tag parses Universal Analytics,  \u003ca target\u003d\"_blank\" href\u003d\"https://developers.google.com/analytics/devguides/collection/ga4/ecommerce\"\u003eGA4\u003c/a\u003e and \u003ca target\u003d\"_blank\" href\u003d\"https://developers.google.com/tag-platform/tag-manager/server-side/common-event-data\"\u003eCommon Event Data\u003c/a\u003e formats.",
-        "defaultValue": true
+        "defaultValue": true,
+        "alwaysInSummary": true
       },
       {
         "type": "CHECKBOX",
@@ -218,7 +221,8 @@ ___TEMPLATE_PARAMETERS___
             "paramValue": true,
             "type": "EQUALS"
           }
-        ]
+        ],
+        "alwaysInSummary": true
       },
       {
         "type": "CHECKBOX",
@@ -271,7 +275,8 @@ ___TEMPLATE_PARAMETERS___
             ]
           }
         ],
-        "defaultValue": true
+        "defaultValue": true,
+        "alwaysInSummary": true
       }
     ]
   },
