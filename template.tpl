@@ -641,7 +641,6 @@ const partnerName = 'stape-gtm-1.1.0';
 const queueName = 'fbq';
 const queue = getQueue(queueName);
 const initIds = copyFromWindow('_meta_gtm_ids') || [];
-const ecommerceDataLayer = copyFromDataLayer('ecommerce', 1);
 const dataLayerVersion = data.enableCurrentDataLayerOnly ? 1 : 2;
 
 setConsent();
@@ -741,6 +740,7 @@ function getEventName() {
     let eventName = copyFromDataLayer('event');
 
     if (!eventName) {
+      const ecommerceDataLayer = copyFromDataLayer('ecommerce', 1);
       if (ecommerceDataLayer.detail) eventName = 'ViewContent';
       else if (ecommerceDataLayer.add) eventName = 'AddToCart';
       else if (ecommerceDataLayer.checkout) eventName = 'InitiateCheckout';
@@ -861,11 +861,13 @@ function getEventData(eventName) {
   let objectProperties = {};
 
   if (data.enableDataLayerMapping) {
-    const ecommerce = getDL('ecommerce');
-
-    if (ecommerce) {
-      objectProperties = getUAEventData(eventName, objectProperties, ecommerce);
+    let ecommerce = getDL('ecommerce');
+    if (getType(ecommerce) !== 'object') {
+      ecommerce = {};
     }
+
+    objectProperties = getUAEventData(eventName, objectProperties, ecommerce);
+
     if (!objectProperties.content_type) {
       objectProperties = getGA4EventData(eventName, objectProperties, ecommerce);
     }
@@ -1081,10 +1083,7 @@ function getUAEventData(eventName, objectProperties, ecommerce) {
 }
 
 function getGA4EventData(eventName, objectProperties, ecommerce) {
-  let items = getDL('items');
-  if (!items && ecommerce && ecommerce.items) {
-    items = ecommerce.items;
-  }
+  const items = getDL('items') || ecommerce.items;
   let currencyFromItems = '';
   let valueFromItems = 0;
 
@@ -1103,13 +1102,13 @@ function getGA4EventData(eventName, objectProperties, ecommerce) {
       if (items[0].price) objectProperties.value = items[0].quantity ? items[0].quantity * items[0].price : items[0].price;
     }
 
-    items.forEach((d, i) => {
+    items.forEach((d) => {
       const content = {};
       if (d.item_id) content.id = d.item_id;
       content.quantity = makeNumber(d.quantity) || 1;
 
       if (d.price) {
-        let item_price = makeNumber(d.price);
+        const item_price = makeNumber(d.price);
         valueFromItems += d.quantity ? d.quantity * item_price : item_price;
         content.item_price = item_price;
       }
@@ -1122,12 +1121,14 @@ function getGA4EventData(eventName, objectProperties, ecommerce) {
     });
   }
 
-  if (getDL('value')) objectProperties.value = getDL('value');
+  const value = ecommerce.value || valueFromItems || getDL('value');
+  if (value) objectProperties.value = value;
 
-  if (getDL('currency')) objectProperties.currency = getDL('currency');
-  else if (currencyFromItems) objectProperties.currency = currencyFromItems;
+  const currency = ecommerce.currency || currencyFromItems || getDL('currency');
+  if (currency) objectProperties.currency = currency;
 
-  if (getDL('search_term')) objectProperties.search_string = getDL('search_term');
+  const searchTerm = getDL('search_term');
+  if (searchTerm) objectProperties.search_string = searchTerm;
 
   if (eventName === 'Purchase') {
     if (!objectProperties.currency) objectProperties.currency = 'USD';
