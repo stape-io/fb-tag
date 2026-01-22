@@ -1,7 +1,7 @@
 homepage: 'https://stape.io/'
 documentation: 'https://github.com/stape-io/fb-tag'
 versions:
-  - sha: 32922944ff8f0e0193a043553981f22351f1e9d3
+  - sha: 26fdd16454bed7e4c46f1cd69bba43e2593b8fbf
     changeNotes: Updated auto-mapping from dataLayer for items, value and currency.
   - sha: ce6118a25adf6e17a94e29b2038238b1c499c907
     changeNotes: Forced configuration fields to be displayed in UI when the tag is in summary view.
