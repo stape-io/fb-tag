@@ -77,6 +77,9 @@ Includes support for:
 - Disable automatic `fbq('set','autoConfig')`, which disables automatic events such as button clicks and page metadata capture.
 - Disable PageView automatic tracking on SPA websites.
 
+## Useful Resources
+- [How to integrate Facebook Pixel with a web GTM container](https://stape.io/blog/add-facebook-pixel-gtm)
+
 ## Open Source
 
 The **Facebook Pixel by Stape** tag for GTM Web is developed and maintained by the [Stape Team](https://stape.io/) under the Apache 2.0 license.
