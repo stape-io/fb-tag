@@ -1,6 +1,8 @@
 homepage: 'https://stape.io/'
 documentation: 'https://github.com/stape-io/fb-tag'
 versions:
+  - sha: 1107c20795f06f3fc51f77134c3a4d5b8f711c46
+    changeNotes: Fixed an issue with autoConfig command.
   - sha: 26fdd16454bed7e4c46f1cd69bba43e2593b8fbf
     changeNotes: Updated auto-mapping from dataLayer for items, value and currency.
   - sha: ce6118a25adf6e17a94e29b2038238b1c499c907
