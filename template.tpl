@@ -726,7 +726,7 @@ function sendEvent() {
     if (isNotInitialized) {
       initIds.push(pixelId);
       setInWindow('_meta_gtm_ids', initIds, true);
-      setSettings();
+      setSettings(pixelId);
     }
 
     if (isNotInitialized || (data.enableEdvancedMatching && !data.runInitOnce)) queue('init', pixelId, userData);
@@ -827,7 +827,7 @@ function getUserData() {
   let userData = {};
 
   if (data.enableEventEnhancement) {
-    userData = getEventEnhancement(userData);
+    userData = getEventEnhancement();
   }
 
   if (data.enableDataLayerMapping) {
