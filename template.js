@@ -16,21 +16,38 @@ const math = require('Math');
 const Object = require('Object');
 const setInWindow = require('setInWindow');
 const sha256 = require('sha256');
+const templateStorage = require('templateStorage');
+
+// Call-once methods.
+let gtmOnSuccess = () => {
+  gtmOnSuccess = () => {};
+  return data.gtmOnSuccess();
+};
+
+let gtmOnFailure = () => {
+  gtmOnFailure = () => {};
+  return data.gtmOnFailure();
+};
 
 /*==============================================================================
 ==============================================================================*/
 
-const partnerName = 'stape-gtm-1.1.0';
 const queueName = 'fbq';
 const queue = getQueue(queueName);
-const initIds = copyFromWindow('_meta_gtm_ids') || [];
-const dataLayerVersion = data.enableCurrentDataLayerOnly ? 1 : 2;
+const isConsentRevoked = data.enableConsentMode ? !isConsentGranted('ad_storage') : data.consent === false;
+const partnerName = 'stape-gtm-1.1.1';
 
-setConsent();
+setConsent(isConsentRevoked);
 sendEvent();
 sendDataLayerPush();
+runOnConsent('ad_storage', () => {
+  loadScripts();
+});
 
-injectScript('https://connect.facebook.net/en_US/fbevents.js', data.gtmOnSuccess, data.gtmOnFailure, 'metaPixel');
+if (isConsentRevoked) {
+  // If consent is revoked, call gtmOnSuccess to avoid 'Still running' status.
+  return gtmOnSuccess();
+}
 
 /*==============================================================================
   Vendor related functions
@@ -38,17 +55,12 @@ injectScript('https://connect.facebook.net/en_US/fbevents.js', data.gtmOnSuccess
 
 function getQueue(queueName) {
   const q = copyFromWindow(queueName);
-  if (q) {
-    return q;
-  }
+  if (q) return q;
 
   setInWindow(queueName, function () {
     const callMethod = copyFromWindow(queueName + '.callMethod.apply');
-    if (callMethod) {
-      callInWindow(queueName + '.callMethod.apply', null, arguments);
-    } else {
-      callInWindow(queueName + '.queue.push', arguments);
-    }
+    if (callMethod) callInWindow(queueName + '.callMethod.apply', null, arguments);
+    else callInWindow(queueName + '.queue.push', arguments);
   });
 
   aliasInWindow('_' + queueName, queueName);
@@ -57,33 +69,55 @@ function getQueue(queueName) {
   return copyFromWindow(queueName);
 }
 
-function setConsent() {
+function setFbqConsent(command) {
+  const queue = getQueue(queueName);
+  if (command === 'revoke') {
+    // Allows only one 'revoke' command at a time in the queue to avoid it being locked indefinitely.
+    const queueHasRevokeCommand = (queue.queue || []).some((item) => item[0] === 'consent' && item[1] === 'revoke');
+    if (queueHasRevokeCommand) return;
+  }
+  queue('consent', command);
+}
+
+function runOnConsent(consentType, callback) {
+  if (data.enableConsentMode) {
+    if (isConsentGranted(consentType)) {
+      callback();
+    } else {
+      const callbacksKey = 'fbq_consent_callbacks_' + consentType;
+      const callbacks = templateStorage.getItem(callbacksKey) || [];
+      callbacks.push(callback);
+      templateStorage.setItem(callbacksKey, callbacks);
+
+      const listenerAddedKey = 'fbq_consent_listener_added_' + consentType;
+      if (!templateStorage.getItem(listenerAddedKey)) {
+        templateStorage.setItem(listenerAddedKey, true);
+        addConsentListener(consentType, (type, granted) => {
+          if (type !== consentType || !granted) return;
+          const queuedCallbacks = templateStorage.getItem(callbacksKey) || [];
+          queuedCallbacks.forEach((cb) => cb());
+          templateStorage.setItem(callbacksKey, []);
+        });
+      }
+    }
+    return;
+  }
+
+  const isConsentManuallyGranted = data.consent !== false;
+  if (isConsentManuallyGranted) callback();
+}
+
+function setConsent(isConsentRevoked) {
   if (data.dpoLDU) {
     queue('dataProcessingOptions', ['LDU'], makeNumber(data.dpoCountry), makeNumber(data.dpoState));
   }
 
-  if (data.enableConsentMode) {
-    if (!isConsentGranted('ad_storage')) {
-      queue('consent', 'revoke');
+  if (isConsentRevoked) setFbqConsent('revoke');
 
-      let wasCalled = false;
-
-      addConsentListener('ad_storage', (consentType, granted) => {
-        if (wasCalled || consentType !== 'ad_storage' || !granted) return;
-        wasCalled = true;
-
-        queue('consent', 'grant');
-      });
-
-      return;
-    }
-
-    queue('consent', 'grant');
-
-    return;
-  }
-
-  queue('consent', data.consent === false ? 'revoke' : 'grant');
+  // Wait for consent to send 'grant'
+  runOnConsent('ad_storage', () => {
+    setFbqConsent('grant');
+  });
 }
 
 function setSettings(pixelId) {
@@ -97,6 +131,7 @@ function setSettings(pixelId) {
 }
 
 function sendEvent() {
+  const initIds = copyFromWindow('_meta_gtm_ids') || [];
   const pixelIds = data.pixelIds;
   const eventName = getEventName();
   const command = getCommand(eventName);
@@ -522,7 +557,20 @@ function getGA4EventData(eventName, objectProperties, ecommerce) {
 }
 
 function getDL(name) {
+  const dataLayerVersion = data.enableCurrentDataLayerOnly ? 1 : 2;
   return copyFromDataLayer(name, dataLayerVersion);
+}
+
+function loadScripts() {
+  injectScript(
+    'https://connect.facebook.net/en_US/fbevents.js',
+    () => {
+      setFbqConsent('grant'); // It needs to be called to unlock the queue after the SDK loads.
+      return gtmOnSuccess();
+    },
+    gtmOnFailure,
+    'metaPixel'
+  );
 }
 
 /*==============================================================================
