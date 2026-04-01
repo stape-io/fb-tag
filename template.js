@@ -40,7 +40,7 @@ const partnerName = 'stape-gtm-1.1.1';
 setConsent(isConsentRevoked);
 sendEvent();
 sendDataLayerPush();
-runOnConsent('ad_storage', () => {
+runOnConsentGranted('ad_storage', isConsentRevoked, () => {
   loadScripts();
 });
 
@@ -79,11 +79,9 @@ function setFbqConsent(command) {
   queue('consent', command);
 }
 
-function runOnConsent(consentType, callback) {
+function runOnConsentGranted(consentType, isConsentRevoked, callback) {
   if (data.enableConsentMode) {
-    if (isConsentGranted(consentType)) {
-      callback();
-    } else {
+    if (isConsentRevoked) {
       const callbacksKey = 'fbq_consent_callbacks_' + consentType;
       const callbacks = templateStorage.getItem(callbacksKey) || [];
       callbacks.push(callback);
@@ -95,16 +93,18 @@ function runOnConsent(consentType, callback) {
         addConsentListener(consentType, (type, granted) => {
           if (type !== consentType || !granted) return;
           const queuedCallbacks = templateStorage.getItem(callbacksKey) || [];
-          queuedCallbacks.forEach((cb) => cb());
           templateStorage.setItem(callbacksKey, []);
+          queuedCallbacks.forEach((cb) => cb());
         });
       }
+    } else {
+      callback();
     }
     return;
   }
 
-  const isConsentManuallyGranted = data.consent !== false;
-  if (isConsentManuallyGranted) callback();
+  // Manual consent
+  if (!isConsentRevoked) callback();
 }
 
 function setConsent(isConsentRevoked) {
@@ -114,8 +114,7 @@ function setConsent(isConsentRevoked) {
 
   if (isConsentRevoked) setFbqConsent('revoke');
 
-  // Wait for consent to send 'grant'
-  runOnConsent('ad_storage', () => {
+  runOnConsentGranted('ad_storage', isConsentRevoked, () => {
     setFbqConsent('grant');
   });
 }
