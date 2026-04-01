@@ -610,6 +610,15 @@ ___TEMPLATE_PARAMETERS___
         "checkboxText": "Disable History Event Tracking",
         "simpleValueType": true,
         "help": "The Facebook Pixel automatically tracks history events (pushState and replaceState) as PageViews. Check this box to disable this automatic tracking."
+      },
+      {
+        "type": "CHECKBOX",
+        "name": "enableParamBuilderSdk",
+        "checkboxText": "Increase Browser ID and Click ID Cookies Coverage",
+        "simpleValueType": true,
+        "defaultValue": true,
+        "help": "When enabled, the Parameter Builder SDK library will be loaded. This library helps retrieving and saving the Browser ID (\u003ci\u003e_fbp\u003c/i\u003e cookie) and Click ID (\u003ci\u003e_fbc\u003c/i\u003e cookie) values into cookies, and it also tries to retrieve a backup Click ID from in-app-browser when feasible.\n\u003cbr/\u003e\u003cbr/\u003e\n\u003ca href\u003d\"https://developers.facebook.com/docs/marketing-api/conversions-api/parameter-builder-library\"\u003eLearn more\u003c/a\u003e.",
+        "alwaysInSummary": true
       }
     ]
   }
@@ -655,13 +664,14 @@ let gtmOnFailure = () => {
 const queueName = 'fbq';
 const queue = getQueue(queueName);
 const isConsentRevoked = data.enableConsentMode ? !isConsentGranted('ad_storage') : data.consent === false;
-const partnerName = 'stape-gtm-1.1.1';
+const isParamBuilderSdkEnabled = data.hasOwnProperty('enableParamBuilderSdk') ? data.enableParamBuilderSdk : true;
+const PARTNER_NAME = 'stape-gtm-1.2.0' + (isParamBuilderSdkEnabled ? '-pb' : '');
 
 setConsent(isConsentRevoked);
-sendEvent();
+sendEvent(isConsentRevoked);
 sendDataLayerPush();
 runOnConsentGranted('ad_storage', isConsentRevoked, () => {
-  loadScripts();
+  loadScripts(isParamBuilderSdkEnabled);
 });
 
 if (isConsentRevoked) {
@@ -749,13 +759,13 @@ function setSettings(pixelId) {
   }
 }
 
-function sendEvent() {
+function sendEvent(isConsentRevoked) {
   const initIds = copyFromWindow('_meta_gtm_ids') || [];
   const pixelIds = data.pixelIds;
   const eventName = getEventName();
   const command = getCommand(eventName);
   const eventData = getEventData(eventName);
-  const userData = getUserData();
+  const userData = getUserData(isConsentRevoked);
 
   pixelIds.split(',').forEach((pixelId) => {
     const isNotInitialized = initIds.indexOf(pixelId) === -1;
@@ -767,7 +777,7 @@ function sendEvent() {
     }
 
     if (isNotInitialized || (data.enableEdvancedMatching && !data.runInitOnce)) queue('init', pixelId, userData);
-    queue('set', 'agent', partnerName, pixelId);
+    queue('set', 'agent', PARTNER_NAME, pixelId);
     queue(command, pixelId, eventName, eventData, data.eventId ? { eventID: data.eventId } : undefined);
   });
 }
@@ -856,7 +866,7 @@ function getCommand(eventName) {
     : 'trackSingle';
 }
 
-function getUserData() {
+function getUserData(isConsentRevoked) {
   if (!data.enableEdvancedMatching) {
     return;
   }
@@ -864,7 +874,7 @@ function getUserData() {
   let userData = {};
 
   if (data.enableEventEnhancement) {
-    userData = getEventEnhancement();
+    userData = getEventEnhancement(isConsentRevoked);
   }
 
   if (data.enableDataLayerMapping) {
@@ -888,7 +898,7 @@ function getUserData() {
   }
 
   if (data.enableEventEnhancement) {
-    storeEventEnhancement(userData);
+    storeEventEnhancement(isConsentRevoked, userData);
   }
 
   return userData;
@@ -921,8 +931,8 @@ function getEventData(eventName) {
   return objectProperties;
 }
 
-function getEventEnhancement() {
-  if (localStorage) {
+function getEventEnhancement(isConsentRevoked) {
+  if (!isConsentRevoked && localStorage) {
     const gtmeec = localStorage.getItem('gtmeec');
 
     if (gtmeec) {
@@ -999,8 +1009,8 @@ function storeUserDataInLocalStorage(userData) {
   localStorage.setItem('gtmeec', gtmeec);
 }
 
-function storeEventEnhancement(userData) {
-  if (localStorage && objHasProps(userData)) {
+function storeEventEnhancement(isConsentRevoked, userData) {
+  if (!isConsentRevoked && localStorage && objHasProps(userData)) {
     if (!data.storeUserDataHashed) storeUserDataInLocalStorage(userData);
     else hashUserDataFields(userData, storeUserDataInLocalStorage);
   }
@@ -1180,7 +1190,7 @@ function getDL(name) {
   return copyFromDataLayer(name, dataLayerVersion);
 }
 
-function loadScripts() {
+function loadScripts(isParamBuilderSdkEnabled) {
   injectScript(
     'https://connect.facebook.net/en_US/fbevents.js',
     () => {
@@ -1190,6 +1200,21 @@ function loadScripts() {
     gtmOnFailure,
     'metaPixel'
   );
+
+  if (isParamBuilderSdkEnabled) {
+    injectScript(
+      'https://unpkg.com/meta-capi-param-builder-clientjs/dist/clientParamBuilder.bundle.js',
+      () => {
+        if (copyFromWindow('clientParamBuilder.processAndCollectAllParams')) {
+          callInWindow('clientParamBuilder.processAndCollectAllParams');
+        } else if (copyFromWindow('clientParamBuilder.processAndCollectParams')) {
+          callInWindow('clientParamBuilder.processAndCollectParams');
+        }
+      },
+      () => {},
+      'metaParamBuilderSdk'
+    );
+  }
 }
 
 /*==============================================================================
@@ -1595,6 +1620,84 @@ ___WEB_PERMISSIONS___
                     "boolean": true
                   }
                 ]
+              },
+              {
+                "type": 3,
+                "mapKey": [
+                  {
+                    "type": 1,
+                    "string": "key"
+                  },
+                  {
+                    "type": 1,
+                    "string": "read"
+                  },
+                  {
+                    "type": 1,
+                    "string": "write"
+                  },
+                  {
+                    "type": 1,
+                    "string": "execute"
+                  }
+                ],
+                "mapValue": [
+                  {
+                    "type": 1,
+                    "string": "clientParamBuilder.processAndCollectAllParams"
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  },
+                  {
+                    "type": 8,
+                    "boolean": false
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  }
+                ]
+              },
+              {
+                "type": 3,
+                "mapKey": [
+                  {
+                    "type": 1,
+                    "string": "key"
+                  },
+                  {
+                    "type": 1,
+                    "string": "read"
+                  },
+                  {
+                    "type": 1,
+                    "string": "write"
+                  },
+                  {
+                    "type": 1,
+                    "string": "execute"
+                  }
+                ],
+                "mapValue": [
+                  {
+                    "type": 1,
+                    "string": "clientParamBuilder.processAndCollectParams"
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  },
+                  {
+                    "type": 8,
+                    "boolean": false
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  }
+                ]
               }
             ]
           }
@@ -1642,6 +1745,10 @@ ___WEB_PERMISSIONS___
               {
                 "type": 1,
                 "string": "https://connect.facebook.net/en_US/fbevents.js"
+              },
+              {
+                "type": 1,
+                "string": "https://unpkg.com/meta-capi-param-builder-clientjs/dist/clientParamBuilder.bundle.js"
               }
             ]
           }
@@ -1775,7 +1882,7 @@ ___WEB_PERMISSIONS___
 ___TESTS___
 
 scenarios:
-- name: '[Happy Path] PageView fires init, agent, trackSingle and injects scripts'
+- name: '[Happy Path] PageView fires init, agent, trackSingle and injects both scripts'
   code: |-
     runCode(mockData);
 
@@ -1788,7 +1895,7 @@ scenarios:
 
     const agentCalls = fbqCalls.filter((c) => c[0] === 'set' && c[1] === 'agent');
     assertThat(agentCalls.length).isEqualTo(1);
-    assertThat(agentCalls[0][2]).isEqualTo(PARTNER_AGENT_VERSION);
+    assertThat(agentCalls[0][2]).isEqualTo(PARTNER_AGENT_VERSION + '-pb');
     assertThat(agentCalls[0][3]).isEqualTo('123456789');
 
     const trackCalls = fbqCalls.filter((c) => c[0] === 'trackSingle');
@@ -1796,8 +1903,9 @@ scenarios:
     assertThat(trackCalls[0][1]).isEqualTo('123456789');
     assertThat(trackCalls[0][2]).isEqualTo('PageView');
 
-    assertThat(injectScriptCalls.length).isEqualTo(1);
+    assertThat(injectScriptCalls.length).isEqualTo(2);
     assertThat(injectScriptCalls[0].url).isEqualTo('https://connect.facebook.net/en_US/fbevents.js');
+    assertThat(injectScriptCalls[1].url).isEqualTo('https://unpkg.com/meta-capi-param-builder-clientjs/dist/clientParamBuilder.bundle.js');
 
     assertApi('gtmOnSuccess').wasCalled();
     assertApi('gtmOnFailure').wasNotCalled();
@@ -1875,7 +1983,7 @@ scenarios:
 
     consentListenerCallback('ad_storage', true);
 
-    assertThat(injectScriptCalls.length).isEqualTo(1);
+    assertThat(injectScriptCalls.length).isEqualTo(2);
     assertThat(injectScriptCalls[0].url).isEqualTo('https://connect.facebook.net/en_US/fbevents.js');
 
     const grantCalls = fbqCalls.filter((c) => c[0] === 'consent' && c[1] === 'grant');
@@ -2466,6 +2574,49 @@ scenarios:
       assertApi('gtmOnSuccess').wasCalled();
       assertApi('gtmOnFailure').wasNotCalled();
     });
+- name: '[Scripts] Param builder calls processAndCollectAllParams when available'
+  code: |-
+    mock('copyFromWindow', (key) => {
+      if (key === 'fbq') return mockFbq;
+      if (key === 'clientParamBuilder.processAndCollectAllParams') return function() {};
+      return undefined;
+    });
+
+    runCode(mockData);
+
+    assertThat(injectScriptCalls.length).isEqualTo(2);
+    assertApi('callInWindow').wasCalledWith('clientParamBuilder.processAndCollectAllParams');
+    assertApi('gtmOnSuccess').wasCalled();
+    assertApi('gtmOnFailure').wasNotCalled();
+- name: '[Scripts] Param builder falls back to processAndCollectParams'
+  code: |-
+    mock('copyFromWindow', (key) => {
+      if (key === 'fbq') return mockFbq;
+      if (key === 'clientParamBuilder.processAndCollectAllParams') return undefined;
+      if (key === 'clientParamBuilder.processAndCollectParams') return function() {};
+      return undefined;
+    });
+
+    runCode(mockData);
+
+    assertThat(injectScriptCalls.length).isEqualTo(2);
+    assertApi('callInWindow').wasCalledWith('clientParamBuilder.processAndCollectParams');
+    assertApi('gtmOnSuccess').wasCalled();
+    assertApi('gtmOnFailure').wasNotCalled();
+- name: '[Scripts] Param builder disabled injects only fbevents and removes -pb suffix'
+  code: |-
+    const testData = assign(assign({}, mockData), { enableParamBuilderSdk: false });
+
+    runCode(testData);
+
+    assertThat(injectScriptCalls.length).isEqualTo(1);
+    assertThat(injectScriptCalls[0].url).isEqualTo('https://connect.facebook.net/en_US/fbevents.js');
+
+    const agentCalls = fbqCalls.filter((c) => c[0] === 'set' && c[1] === 'agent');
+    assertThat(agentCalls[0][2]).isEqualTo(PARTNER_AGENT_VERSION);
+
+    assertApi('gtmOnSuccess').wasCalled();
+    assertApi('gtmOnFailure').wasNotCalled();
 - name: '[Scripts] fbevents failure calls gtmOnFailure'
   code: |-
     mock('injectScript', (url, onsuccess, onfailure) => {
@@ -2499,6 +2650,36 @@ scenarios:
     const stored = JSON.parse(localStorageData.gtmeec);
     assertThat(stored.em).isEqualTo('stored@example.com');
     assertThat(stored.ph).isEqualTo('+1999999999');
+
+    assertApi('gtmOnSuccess').wasCalled();
+    assertApi('gtmOnFailure').wasNotCalled();
+- name: '[Event Enhancement] Skips localStorage read and write when consent is revoked'
+  code: |-
+    let getItemCalled = false;
+    let setItemCalled = false;
+    mockObject('localStorage', {
+      getItem: (key) => { getItemCalled = true; return localStorageData[key]; },
+      setItem: (key, value) => { setItemCalled = true; localStorageData[key] = value; }
+    });
+
+    localStorageData.gtmeec = '{"em":"stored@example.com"}';
+
+    const testData = assign(assign({}, mockData), {
+      consent: false,
+      enableEdvancedMatching: true,
+      enableEventEnhancement: true,
+      userDataFromVariable: { ph: '+1999999999' }
+    });
+
+    runCode(testData);
+
+    assertThat(getItemCalled).isFalse();
+    assertThat(setItemCalled).isFalse();
+
+    const initCalls = fbqCalls.filter((c) => c[0] === 'init');
+    const userData = initCalls[0][2];
+    assertThat(userData.em).isUndefined();
+    assertThat(userData.ph).isEqualTo('+1999999999');
 
     assertApi('gtmOnSuccess').wasCalled();
     assertApi('gtmOnFailure').wasNotCalled();
@@ -2619,7 +2800,7 @@ setup: |-
   const JSON = require('JSON');
   const Object = require('Object');
 
-  const PARTNER_AGENT_VERSION = 'stape-gtm-1.1.1';
+  const PARTNER_AGENT_VERSION = 'stape-gtm-1.2.0';
 
   const assign = (target, source) => {
     if (!source) return target;
@@ -2685,6 +2866,7 @@ setup: |-
     eventNameStandard: 'PageView',
     enableDataLayerMapping: false,
     enableEdvancedMatching: false,
+    enableParamBuilderSdk: true,
     dpoLDU: false,
     disableAutoConfig: false,
     disablePushState: false,
@@ -2698,6 +2880,9 @@ setup: |-
 
 ___NOTES___
 
+2026-04-09 - Change Notes:
+  - Add optional Meta Parameter Builder SDK integration (enabled by default) to improve _fbp and _fbc cookie coverage, including backup Click ID retrieval from in-app browsers
+  - Add consent-aware event enhancement: user data is now only read from/written to localStorage when consent is granted
+  - Bump version to stape-gtm-1.2.0 (with -pb suffix when Param Builder SDK is active)
+
 Created on 08/15/2025, 08:58:45 AM
-
-

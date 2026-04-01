@@ -76,6 +76,10 @@ Includes support for:
 
 - Disable automatic `fbq('set','autoConfig')`, which disables automatic events such as button clicks and page metadata capture.
 - Disable PageView automatic tracking on SPA websites.
+- Increase Click ID and Browser ID coverage.
+  When enabled, the tag loads the [Meta's Parameter Builder SDK](https://developers.facebook.com/docs/marketing-api/conversions-api/parameter-builder-library) to improve cookie coverage for:
+  - **Browser ID** (`_fbp` cookie)
+  - **Click ID** (`_fbc` cookie) — including backup retrieval from in-app browsers
 
 ## Useful Resources
 - [How to integrate Facebook Pixel with a web GTM container](https://stape.io/blog/add-facebook-pixel-gtm)

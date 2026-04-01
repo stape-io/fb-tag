@@ -35,13 +35,14 @@ let gtmOnFailure = () => {
 const queueName = 'fbq';
 const queue = getQueue(queueName);
 const isConsentRevoked = data.enableConsentMode ? !isConsentGranted('ad_storage') : data.consent === false;
-const partnerName = 'stape-gtm-1.1.1';
+const isParamBuilderSdkEnabled = data.hasOwnProperty('enableParamBuilderSdk') ? data.enableParamBuilderSdk : true;
+const PARTNER_NAME = 'stape-gtm-1.2.0' + (isParamBuilderSdkEnabled ? '-pb' : '');
 
 setConsent(isConsentRevoked);
-sendEvent();
+sendEvent(isConsentRevoked);
 sendDataLayerPush();
 runOnConsentGranted('ad_storage', isConsentRevoked, () => {
-  loadScripts();
+  loadScripts(isParamBuilderSdkEnabled);
 });
 
 if (isConsentRevoked) {
@@ -129,13 +130,13 @@ function setSettings(pixelId) {
   }
 }
 
-function sendEvent() {
+function sendEvent(isConsentRevoked) {
   const initIds = copyFromWindow('_meta_gtm_ids') || [];
   const pixelIds = data.pixelIds;
   const eventName = getEventName();
   const command = getCommand(eventName);
   const eventData = getEventData(eventName);
-  const userData = getUserData();
+  const userData = getUserData(isConsentRevoked);
 
   pixelIds.split(',').forEach((pixelId) => {
     const isNotInitialized = initIds.indexOf(pixelId) === -1;
@@ -147,7 +148,7 @@ function sendEvent() {
     }
 
     if (isNotInitialized || (data.enableEdvancedMatching && !data.runInitOnce)) queue('init', pixelId, userData);
-    queue('set', 'agent', partnerName, pixelId);
+    queue('set', 'agent', PARTNER_NAME, pixelId);
     queue(command, pixelId, eventName, eventData, data.eventId ? { eventID: data.eventId } : undefined);
   });
 }
@@ -236,7 +237,7 @@ function getCommand(eventName) {
     : 'trackSingle';
 }
 
-function getUserData() {
+function getUserData(isConsentRevoked) {
   if (!data.enableEdvancedMatching) {
     return;
   }
@@ -244,7 +245,7 @@ function getUserData() {
   let userData = {};
 
   if (data.enableEventEnhancement) {
-    userData = getEventEnhancement();
+    userData = getEventEnhancement(isConsentRevoked);
   }
 
   if (data.enableDataLayerMapping) {
@@ -268,7 +269,7 @@ function getUserData() {
   }
 
   if (data.enableEventEnhancement) {
-    storeEventEnhancement(userData);
+    storeEventEnhancement(isConsentRevoked, userData);
   }
 
   return userData;
@@ -301,8 +302,8 @@ function getEventData(eventName) {
   return objectProperties;
 }
 
-function getEventEnhancement() {
-  if (localStorage) {
+function getEventEnhancement(isConsentRevoked) {
+  if (!isConsentRevoked && localStorage) {
     const gtmeec = localStorage.getItem('gtmeec');
 
     if (gtmeec) {
@@ -379,8 +380,8 @@ function storeUserDataInLocalStorage(userData) {
   localStorage.setItem('gtmeec', gtmeec);
 }
 
-function storeEventEnhancement(userData) {
-  if (localStorage && objHasProps(userData)) {
+function storeEventEnhancement(isConsentRevoked, userData) {
+  if (!isConsentRevoked && localStorage && objHasProps(userData)) {
     if (!data.storeUserDataHashed) storeUserDataInLocalStorage(userData);
     else hashUserDataFields(userData, storeUserDataInLocalStorage);
   }
@@ -560,7 +561,7 @@ function getDL(name) {
   return copyFromDataLayer(name, dataLayerVersion);
 }
 
-function loadScripts() {
+function loadScripts(isParamBuilderSdkEnabled) {
   injectScript(
     'https://connect.facebook.net/en_US/fbevents.js',
     () => {
@@ -570,6 +571,21 @@ function loadScripts() {
     gtmOnFailure,
     'metaPixel'
   );
+
+  if (isParamBuilderSdkEnabled) {
+    injectScript(
+      'https://unpkg.com/meta-capi-param-builder-clientjs/dist/clientParamBuilder.bundle.js',
+      () => {
+        if (copyFromWindow('clientParamBuilder.processAndCollectAllParams')) {
+          callInWindow('clientParamBuilder.processAndCollectAllParams');
+        } else if (copyFromWindow('clientParamBuilder.processAndCollectParams')) {
+          callInWindow('clientParamBuilder.processAndCollectParams');
+        }
+      },
+      () => {},
+      'metaParamBuilderSdk'
+    );
+  }
 }
 
 /*==============================================================================
