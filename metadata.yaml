@@ -1,8 +1,10 @@
 homepage: 'https://stape.io/'
 documentation: 'https://github.com/stape-io/fb-tag'
 versions:
-  - sha: ff8c93359d634c3221f5c02b21c9c32b079c6529
-    changeNotes: Refactored consent handling.
+  - sha: c94461ee086c1a458cd43d0135d24d41485b8ec3
+    changeNotes: |2
+      Add optional Meta Parameter Builder SDK integration.
+      Add consent-aware event enhancement.
   - sha: 1107c20795f06f3fc51f77134c3a4d5b8f711c46
     changeNotes: Fixed an issue with autoConfig command.
   - sha: 26fdd16454bed7e4c46f1cd69bba43e2593b8fbf
