@@ -1,6 +1,10 @@
 homepage: 'https://stape.io/'
 documentation: 'https://github.com/stape-io/fb-tag'
 versions:
+  - sha: a2ee28e337f36eaea393a77e6c14fdaf6c29488d
+    changeNotes: |2
+      Prevent Param Builder SDK from being re-injected and called more than once per page.
+      Skip Param Builder SDK load on Magento 2 Checkout pages to avoid conflicts with RequireJS.
   - sha: c94461ee086c1a458cd43d0135d24d41485b8ec3
     changeNotes: |2
       Add optional Meta Parameter Builder SDK integration.
