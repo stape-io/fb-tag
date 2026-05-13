@@ -572,17 +572,22 @@ function loadScripts(isParamBuilderSdkEnabled) {
     'metaPixel'
   );
 
-  if (isParamBuilderSdkEnabled) {
+  const isParamBuilderSdkLoadedOrLoading = !!copyFromWindow('_meta_param_builder_sdk_status');
+  if (isParamBuilderSdkEnabled && !isParamBuilderSdkLoadedOrLoading && !isMagento2Checkout()) {
+    setInWindow('_meta_param_builder_sdk_status', 'loading', true);
     injectScript(
       'https://unpkg.com/meta-capi-param-builder-clientjs/dist/clientParamBuilder.bundle.js',
       () => {
+        setInWindow('_meta_param_builder_sdk_status', 'loaded', true);
         if (copyFromWindow('clientParamBuilder.processAndCollectAllParams')) {
           callInWindow('clientParamBuilder.processAndCollectAllParams');
         } else if (copyFromWindow('clientParamBuilder.processAndCollectParams')) {
           callInWindow('clientParamBuilder.processAndCollectParams');
         }
       },
-      () => {},
+      () => {
+        setInWindow('_meta_param_builder_sdk_status', undefined, true);
+      },
       'metaParamBuilderSdk'
     );
   }
@@ -623,4 +628,10 @@ function normalizePhoneNumber(phoneNumber) {
 function removeWhiteSpace(input) {
   if (!input) return input;
   return input.split(' ').join('');
+}
+
+function isMagento2Checkout() {
+  const checkoutConfig = copyFromWindow('checkoutConfig');
+
+  return getType(checkoutConfig) === 'object' && getType(checkoutConfig.quoteData) === 'object' && checkoutConfig.hasOwnProperty('defaultSuccessPageUrl') && checkoutConfig.hasOwnProperty('storeCode');
 }

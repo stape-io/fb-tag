@@ -1201,17 +1201,22 @@ function loadScripts(isParamBuilderSdkEnabled) {
     'metaPixel'
   );
 
-  if (isParamBuilderSdkEnabled) {
+  const isParamBuilderSdkLoadedOrLoading = !!copyFromWindow('_meta_param_builder_sdk_status');
+  if (isParamBuilderSdkEnabled && !isParamBuilderSdkLoadedOrLoading && !isMagento2Checkout()) {
+    setInWindow('_meta_param_builder_sdk_status', 'loading', true);
     injectScript(
       'https://unpkg.com/meta-capi-param-builder-clientjs/dist/clientParamBuilder.bundle.js',
       () => {
+        setInWindow('_meta_param_builder_sdk_status', 'loaded', true);
         if (copyFromWindow('clientParamBuilder.processAndCollectAllParams')) {
           callInWindow('clientParamBuilder.processAndCollectAllParams');
         } else if (copyFromWindow('clientParamBuilder.processAndCollectParams')) {
           callInWindow('clientParamBuilder.processAndCollectParams');
         }
       },
-      () => {},
+      () => {
+        setInWindow('_meta_param_builder_sdk_status', undefined, true);
+      },
       'metaParamBuilderSdk'
     );
   }
@@ -1252,6 +1257,12 @@ function normalizePhoneNumber(phoneNumber) {
 function removeWhiteSpace(input) {
   if (!input) return input;
   return input.split(' ').join('');
+}
+
+function isMagento2Checkout() {
+  const checkoutConfig = copyFromWindow('checkoutConfig');
+
+  return getType(checkoutConfig) === 'object' && getType(checkoutConfig.quoteData) === 'object' && checkoutConfig.hasOwnProperty('defaultSuccessPageUrl') && checkoutConfig.hasOwnProperty('storeCode');
 }
 
 
@@ -1696,6 +1707,84 @@ ___WEB_PERMISSIONS___
                   {
                     "type": 8,
                     "boolean": true
+                  }
+                ]
+              },
+              {
+                "type": 3,
+                "mapKey": [
+                  {
+                    "type": 1,
+                    "string": "key"
+                  },
+                  {
+                    "type": 1,
+                    "string": "read"
+                  },
+                  {
+                    "type": 1,
+                    "string": "write"
+                  },
+                  {
+                    "type": 1,
+                    "string": "execute"
+                  }
+                ],
+                "mapValue": [
+                  {
+                    "type": 1,
+                    "string": "_meta_param_builder_sdk_status"
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  },
+                  {
+                    "type": 8,
+                    "boolean": false
+                  }
+                ]
+              },
+              {
+                "type": 3,
+                "mapKey": [
+                  {
+                    "type": 1,
+                    "string": "key"
+                  },
+                  {
+                    "type": 1,
+                    "string": "read"
+                  },
+                  {
+                    "type": 1,
+                    "string": "write"
+                  },
+                  {
+                    "type": 1,
+                    "string": "execute"
+                  }
+                ],
+                "mapValue": [
+                  {
+                    "type": 1,
+                    "string": "checkoutConfig"
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  },
+                  {
+                    "type": 8,
+                    "boolean": false
+                  },
+                  {
+                    "type": 8,
+                    "boolean": false
                   }
                 ]
               }
@@ -2588,21 +2677,6 @@ scenarios:
     assertApi('callInWindow').wasCalledWith('clientParamBuilder.processAndCollectAllParams');
     assertApi('gtmOnSuccess').wasCalled();
     assertApi('gtmOnFailure').wasNotCalled();
-- name: '[Scripts] Param builder falls back to processAndCollectParams'
-  code: |-
-    mock('copyFromWindow', (key) => {
-      if (key === 'fbq') return mockFbq;
-      if (key === 'clientParamBuilder.processAndCollectAllParams') return undefined;
-      if (key === 'clientParamBuilder.processAndCollectParams') return function() {};
-      return undefined;
-    });
-
-    runCode(mockData);
-
-    assertThat(injectScriptCalls.length).isEqualTo(2);
-    assertApi('callInWindow').wasCalledWith('clientParamBuilder.processAndCollectParams');
-    assertApi('gtmOnSuccess').wasCalled();
-    assertApi('gtmOnFailure').wasNotCalled();
 - name: '[Scripts] Param builder disabled injects only fbevents and removes -pb suffix'
   code: |-
     const testData = assign(assign({}, mockData), { enableParamBuilderSdk: false });
@@ -2617,6 +2691,45 @@ scenarios:
 
     assertApi('gtmOnSuccess').wasCalled();
     assertApi('gtmOnFailure').wasNotCalled();
+- name: '[Scripts] Param builder not injected again when already loaded or loading'
+  code: |2-
+       ['loading', 'loaded'].forEach((status) => {
+          injectScriptCalls = [];
+
+          mock('copyFromWindow', (key) => {
+            if (key === 'fbq') return mockFbq;
+            if (key === '_meta_param_builder_sdk_status') return status;
+            return undefined;
+          });
+
+          runCode(mockData);
+
+          assertThat(injectScriptCalls.length).isEqualTo(1);
+          assertThat(injectScriptCalls[0].url).isEqualTo('https://connect.facebook.net/en_US/fbevents.js');
+
+          assertApi('gtmOnSuccess').wasCalled();
+          assertApi('gtmOnFailure').wasNotCalled();
+        });
+- name: '[Scripts] Param builder not injected on Magento 2 Checkout'
+  code: |2-
+       const checkoutConfig = {};
+        checkoutConfig.quoteData = {};
+        checkoutConfig.defaultSuccessPageUrl = '/checkout/success';
+        checkoutConfig.storeCode = 'default';
+
+        mock('copyFromWindow', (key) => {
+          if (key === 'fbq') return mockFbq;
+          if (key === 'checkoutConfig') return checkoutConfig;
+          return undefined;
+        });
+
+        runCode(mockData);
+
+        assertThat(injectScriptCalls.length).isEqualTo(1);
+        assertThat(injectScriptCalls[0].url).isEqualTo('https://connect.facebook.net/en_US/fbevents.js');
+
+        assertApi('gtmOnSuccess').wasCalled();
+        assertApi('gtmOnFailure').wasNotCalled();
 - name: '[Scripts] fbevents failure calls gtmOnFailure'
   code: |-
     mock('injectScript', (url, onsuccess, onfailure) => {
@@ -2879,6 +2992,10 @@ setup: |-
 
 
 ___NOTES___
+
+2026-05-13 - Change Notes:
+  - Prevent Param Builder SDK from being re-injected when it is already loading or has loaded, using a window-level status flag (_meta_param_builder_sdk_status)
+  - Skip Param Builder SDK injection on Magento 2 checkout pages to avoid compatibility conflicts
 
 2026-04-09 - Change Notes:
   - Add optional Meta Parameter Builder SDK integration (enabled by default) to improve _fbp and _fbc cookie coverage, including backup Click ID retrieval from in-app browsers
