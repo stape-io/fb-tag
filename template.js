@@ -34,8 +34,12 @@ let gtmOnFailure = () => {
 
 const queueName = 'fbq';
 const queue = getQueue(queueName);
-const isConsentRevoked = data.enableConsentMode ? !isConsentGranted('ad_storage') : data.consent === false;
-const isParamBuilderSdkEnabled = data.hasOwnProperty('enableParamBuilderSdk') ? data.enableParamBuilderSdk : true;
+const isConsentRevoked = data.enableConsentMode
+  ? !isConsentGranted('ad_storage')
+  : data.consent === false;
+const isParamBuilderSdkEnabled = data.hasOwnProperty('enableParamBuilderSdk')
+  ? data.enableParamBuilderSdk
+  : true;
 const PARTNER_NAME = 'stape-gtm-1.2.0' + (isParamBuilderSdkEnabled ? '-pb' : '');
 
 setConsent(isConsentRevoked);
@@ -74,7 +78,9 @@ function setFbqConsent(command) {
   const queue = getQueue(queueName);
   if (command === 'revoke') {
     // Allows only one 'revoke' command at a time in the queue to avoid it being locked indefinitely.
-    const queueHasRevokeCommand = (queue.queue || []).some((item) => item[0] === 'consent' && item[1] === 'revoke');
+    const queueHasRevokeCommand = (queue.queue || []).some(
+      (item) => item[0] === 'consent' && item[1] === 'revoke'
+    );
     if (queueHasRevokeCommand) return;
   }
   queue('consent', command);
@@ -147,9 +153,17 @@ function sendEvent(isConsentRevoked) {
       setSettings(pixelId);
     }
 
-    if (isNotInitialized || (data.enableEdvancedMatching && !data.runInitOnce)) queue('init', pixelId, userData);
+    if (isNotInitialized || (data.enableEdvancedMatching && !data.runInitOnce)) {
+      queue('init', pixelId, userData);
+    }
     queue('set', 'agent', PARTNER_NAME, pixelId);
-    queue(command, pixelId, eventName, eventData, data.eventId ? { eventID: data.eventId } : undefined);
+    queue(
+      command,
+      pixelId,
+      eventName,
+      eventData,
+      data.eventId ? { eventID: data.eventId } : undefined
+    );
   });
 }
 
@@ -296,7 +310,10 @@ function getEventData(eventName) {
   }
 
   if (data.objectPropertiesList && data.objectPropertiesList.length) {
-    objectProperties = mergeObjects(objectProperties, makeTableMap(data.objectPropertiesList, 'name', 'value'));
+    objectProperties = mergeObjects(
+      objectProperties,
+      makeTableMap(data.objectPropertiesList, 'name', 'value')
+    );
   }
 
   return objectProperties;
@@ -346,9 +363,12 @@ function hashUserDataFields(userData, storeUserDataInLocalStorage) {
       return;
     }
 
-    const normalizedValue = makeString(normalizeBasedOnSchemaKey(fieldName, value)).toLowerCase().trim();
-    if (canUseHashSync) userDataHashed[fieldName] = callInWindow('dataTag256', normalizedValue, 'HEX');
-    else {
+    const normalizedValue = makeString(normalizeBasedOnSchemaKey(fieldName, value))
+      .toLowerCase()
+      .trim();
+    if (canUseHashSync) {
+      userDataHashed[fieldName] = callInWindow('dataTag256', normalizedValue, 'HEX');
+    } else {
       hashAsyncHelpers.pendingHashs++;
       sha256(
         normalizedValue,
@@ -397,68 +417,122 @@ function sendDataLayerPush() {
 }
 
 function parseUserData(userData, userDataFrom, useDL) {
-  let email = userDataFrom.email || userDataFrom.sha256_email_address || userDataFrom.email_address || userDataFrom.em;
+  let email =
+    userDataFrom.email ||
+    userDataFrom.sha256_email_address ||
+    userDataFrom.email_address ||
+    userDataFrom.em;
   const emailType = getType(email);
   if (emailType === 'array' || emailType === 'object') email = email[0];
   if (email) userData.em = email;
 
-  let phone = userDataFrom.phone || userDataFrom.sha256_phone_number || userDataFrom.phone_number || userDataFrom.ph;
+  let phone =
+    userDataFrom.phone ||
+    userDataFrom.sha256_phone_number ||
+    userDataFrom.phone_number ||
+    userDataFrom.ph;
   const phoneType = getType(phone);
   if (phoneType === 'array' || phoneType === 'object') phone = phone[0];
   if (phone) userData.ph = phone;
 
-  if (userDataFrom.firstName) userData.fn = userDataFrom.firstName;
-  else if (userDataFrom.nameFirst) userData.fn = userDataFrom.nameFirst;
-  else if (userDataFrom.first_name) userData.fn = userDataFrom.first_name;
-  else if (userDataFrom.fn) userData.fn = userDataFrom.fn;
-  else if (userDataFrom.address && userDataFrom.address.sha256_first_name) userData.fn = userDataFrom.address.sha256_first_name;
-  else if (userDataFrom.address && userDataFrom.address[0] && userDataFrom.address[0].sha256_first_name) userData.fn = userDataFrom.address[0].sha256_first_name;
-  else if (userDataFrom.address && userDataFrom.address.first_name) userData.fn = userDataFrom.address.first_name;
-  else if (userDataFrom.address && userDataFrom.address[0] && userDataFrom.address[0].first_name) userData.fn = userDataFrom.address[0].first_name;
+  const firstName =
+    userDataFrom.firstName ||
+    userDataFrom.nameFirst ||
+    userDataFrom.first_name ||
+    userDataFrom.fn ||
+    (userDataFrom.address && userDataFrom.address.sha256_first_name
+      ? userDataFrom.address.sha256_first_name
+      : undefined) ||
+    (userDataFrom.address && userDataFrom.address[0] && userDataFrom.address[0].sha256_first_name
+      ? userDataFrom.address[0].sha256_first_name
+      : undefined) ||
+    (userDataFrom.address && userDataFrom.address.first_name
+      ? userDataFrom.address.first_name
+      : undefined) ||
+    (userDataFrom.address && userDataFrom.address[0] && userDataFrom.address[0].first_name
+      ? userDataFrom.address[0].first_name
+      : undefined);
+  if (firstName) userData.fn = firstName;
 
-  if (userDataFrom.lastName) userData.ln = userDataFrom.lastName;
-  else if (userDataFrom.nameLast) userData.ln = userDataFrom.nameLast;
-  else if (userDataFrom.last_name) userData.ln = userDataFrom.last_name;
-  else if (userDataFrom.ln) userData.ln = userDataFrom.ln;
-  else if (userDataFrom.address && userDataFrom.address.sha256_last_name) userData.ln = userDataFrom.address.sha256_last_name;
-  else if (userDataFrom.address && userDataFrom.address[0] && userDataFrom.address[0].sha256_last_name) userData.ln = userDataFrom.address[0].sha256_last_name;
-  else if (userDataFrom.address && userDataFrom.address.last_name) userData.ln = userDataFrom.address.last_name;
-  else if (userDataFrom.address && userDataFrom.address[0] && userDataFrom.address[0].last_name) userData.ln = userDataFrom.address[0].last_name;
+  const lastName =
+    userDataFrom.lastName ||
+    userDataFrom.nameLast ||
+    userDataFrom.last_name ||
+    userDataFrom.ln ||
+    (userDataFrom.address && userDataFrom.address.sha256_last_name
+      ? userDataFrom.address.sha256_last_name
+      : undefined) ||
+    (userDataFrom.address && userDataFrom.address[0] && userDataFrom.address[0].sha256_last_name
+      ? userDataFrom.address[0].sha256_last_name
+      : undefined) ||
+    (userDataFrom.address && userDataFrom.address.last_name
+      ? userDataFrom.address.last_name
+      : undefined) ||
+    (userDataFrom.address && userDataFrom.address[0] && userDataFrom.address[0].last_name
+      ? userDataFrom.address[0].last_name
+      : undefined);
+  if (lastName) userData.ln = lastName;
 
   if (userDataFrom.ge) userData.ge = userDataFrom.ge;
   if (userDataFrom.db) userData.db = userDataFrom.db;
 
-  if (userDataFrom.city) userData.ct = userDataFrom.city;
-  else if (userDataFrom.ct) userData.ct = userDataFrom.ct;
-  else if (userDataFrom.address && userDataFrom.address.city) userData.ct = userDataFrom.address.city;
-  else if (userDataFrom.address && userDataFrom.address[0] && userDataFrom.address[0].city) userData.ct = userDataFrom.address[0].city;
+  const city =
+    userDataFrom.city ||
+    userDataFrom.ct ||
+    (userDataFrom.address && userDataFrom.address.city ? userDataFrom.address.city : undefined) ||
+    (userDataFrom.address && userDataFrom.address[0] && userDataFrom.address[0].city
+      ? userDataFrom.address[0].city
+      : undefined);
+  if (city) userData.ct = city;
 
-  if (userDataFrom.state) userData.st = userDataFrom.state;
-  else if (userDataFrom.region) userData.st = userDataFrom.region;
-  else if (userDataFrom.st) userData.st = userDataFrom.st;
-  else if (userDataFrom.address && userDataFrom.address.state) userData.st = userDataFrom.address.state;
-  else if (userDataFrom.address && userDataFrom.address[0] && userDataFrom.address[0].state) userData.st = userDataFrom.address[0].state;
-  else if (userDataFrom.address && userDataFrom.address.region) userData.st = userDataFrom.address.region;
-  else if (userDataFrom.address && userDataFrom.address[0] && userDataFrom.address[0].region) userData.st = userDataFrom.address[0].region;
+  const state =
+    userDataFrom.state ||
+    userDataFrom.region ||
+    userDataFrom.st ||
+    (userDataFrom.address && userDataFrom.address.state ? userDataFrom.address.state : undefined) ||
+    (userDataFrom.address && userDataFrom.address[0] && userDataFrom.address[0].state
+      ? userDataFrom.address[0].state
+      : undefined) ||
+    (userDataFrom.address && userDataFrom.address.region
+      ? userDataFrom.address.region
+      : undefined) ||
+    (userDataFrom.address && userDataFrom.address[0] && userDataFrom.address[0].region
+      ? userDataFrom.address[0].region
+      : undefined);
+  if (state) userData.st = state;
 
-  if (userDataFrom.zip) userData.zp = userDataFrom.zip;
-  else if (userDataFrom.postal_code) userData.zp = userDataFrom.postal_code;
-  else if (userDataFrom.zp) userData.zp = userDataFrom.zp;
-  else if (userDataFrom.address && userDataFrom.address.postal_code) userData.zp = userDataFrom.address.postal_code;
-  else if (userDataFrom.address && userDataFrom.address[0] && userDataFrom.address[0].postal_code) userData.zp = userDataFrom.address[0].postal_code;
-  else if (userDataFrom.address && userDataFrom.address.zip) userData.zp = userDataFrom.address.zip;
-  else if (userDataFrom.address && userDataFrom.address[0] && userDataFrom.address[0].zip) userData.zp = userDataFrom.address[0].zip;
+  const zip =
+    userDataFrom.zip ||
+    userDataFrom.postal_code ||
+    userDataFrom.zp ||
+    (userDataFrom.address && userDataFrom.address.postal_code
+      ? userDataFrom.address.postal_code
+      : undefined) ||
+    (userDataFrom.address && userDataFrom.address[0] && userDataFrom.address[0].postal_code
+      ? userDataFrom.address[0].postal_code
+      : undefined) ||
+    (userDataFrom.address && userDataFrom.address.zip ? userDataFrom.address.zip : undefined) ||
+    (userDataFrom.address && userDataFrom.address[0] && userDataFrom.address[0].zip
+      ? userDataFrom.address[0].zip
+      : undefined);
+  if (zip) userData.zp = zip;
 
-  if (userDataFrom.country) userData.country = userDataFrom.country;
-  else if (userDataFrom.address && userDataFrom.address.country) userData.country = userDataFrom.address.country;
-  else if (userDataFrom.address && userDataFrom.address[0] && userDataFrom.address[0].country) userData.country = userDataFrom.address[0].country;
+  const country =
+    userDataFrom.country ||
+    (userDataFrom.address && userDataFrom.address.country
+      ? userDataFrom.address.country
+      : undefined) ||
+    (userDataFrom.address && userDataFrom.address[0] && userDataFrom.address[0].country
+      ? userDataFrom.address[0].country
+      : undefined);
+  if (country) userData.country = country;
 
-  if (userDataFrom.external_id) userData.external_id = userDataFrom.external_id;
-  else if (userDataFrom.user_id) userData.external_id = userDataFrom.user_id;
-  else if (userDataFrom.userId) userData.external_id = userDataFrom.userId;
-  else if (useDL && getDL('external_id')) userData.external_id = getDL('external_id');
-  else if (useDL && getDL('user_id')) userData.external_id = getDL('user_id');
-  else if (useDL && getDL('userId')) userData.external_id = getDL('userId');
+  const externalId =
+    userDataFrom.external_id ||
+    userDataFrom.user_id ||
+    userDataFrom.userId ||
+    (useDL ? getDL('external_id') || getDL('user_id') || getDL('userId') || undefined : undefined);
+  if (externalId) userData.external_id = externalId;
 
   return userData;
 }
@@ -474,7 +548,11 @@ function getUAEventData(eventName, objectProperties, ecommerce) {
   if (eventActionMap[eventName]) {
     const action = eventActionMap[eventName];
 
-    if (ecommerce[action] && ecommerce[action].products && getType(ecommerce[action].products) === 'array') {
+    if (
+      ecommerce[action] &&
+      ecommerce[action].products &&
+      getType(ecommerce[action].products) === 'array'
+    ) {
       objectProperties = {
         content_type: 'product',
         contents: ecommerce[action].products.map((prod) => ({
@@ -517,7 +595,10 @@ function getGA4EventData(eventName, objectProperties, ecommerce) {
     if (!items[1]) {
       if (items[0].item_name) objectProperties.content_name = items[0].item_name;
       if (items[0].item_category) objectProperties.content_category = items[0].item_category;
-      if (items[0].price) objectProperties.value = items[0].quantity ? items[0].quantity * items[0].price : items[0].price;
+      if (items[0].price)
+        objectProperties.value = items[0].quantity
+          ? items[0].quantity * items[0].price
+          : items[0].price;
     }
 
     items.forEach((d) => {
@@ -622,16 +703,31 @@ function isHashed(value) {
 
 function normalizePhoneNumber(phoneNumber) {
   if (!phoneNumber) return phoneNumber;
-  return phoneNumber.split('+').join('').split(' ').join('').split('-').join('').split('(').join('').split(')').join('');
+  return makeString(phoneNumber)
+    .split('+')
+    .join('')
+    .split(' ')
+    .join('')
+    .split('-')
+    .join('')
+    .split('(')
+    .join('')
+    .split(')')
+    .join('');
 }
 
 function removeWhiteSpace(input) {
   if (!input) return input;
-  return input.split(' ').join('');
+  return makeString(input).split(' ').join('');
 }
 
 function isMagento2Checkout() {
   const checkoutConfig = copyFromWindow('checkoutConfig');
 
-  return getType(checkoutConfig) === 'object' && getType(checkoutConfig.quoteData) === 'object' && checkoutConfig.hasOwnProperty('defaultSuccessPageUrl') && checkoutConfig.hasOwnProperty('storeCode');
+  return (
+    getType(checkoutConfig) === 'object' &&
+    getType(checkoutConfig.quoteData) === 'object' &&
+    checkoutConfig.hasOwnProperty('defaultSuccessPageUrl') &&
+    checkoutConfig.hasOwnProperty('storeCode')
+  );
 }
