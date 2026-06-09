@@ -1,6 +1,8 @@
 homepage: 'https://stape.io/'
 documentation: 'https://github.com/stape-io/fb-tag'
 versions:
+  - sha: bbdd7aa222cf69015f717b01c95f1f80621352e9
+    changeNotes: Forced casting to string before normalization when storing User Data in hashed format.
   - sha: a2ee28e337f36eaea393a77e6c14fdaf6c29488d
     changeNotes: |2
       Prevent Param Builder SDK from being re-injected and called more than once per page.
