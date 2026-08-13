@@ -181,6 +181,9 @@ function getEventName() {
 
     const mapFacebookEventName = {
       page_view: 'PageView',
+      'gtm.init': 'PageView',
+      'gtm.js': 'PageView',
+      'gtm.historyChange': 'PageView',
       'gtm.dom': 'PageView',
       add_payment_info: 'AddPaymentInfo',
       add_to_cart: 'AddToCart',
