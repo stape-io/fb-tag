@@ -657,7 +657,7 @@ function loadScripts(isParamBuilderSdkEnabled) {
   );
 
   const isParamBuilderSdkLoadedOrLoading = !!copyFromWindow('_meta_param_builder_sdk_status');
-  if (isParamBuilderSdkEnabled && !isParamBuilderSdkLoadedOrLoading && !isMagento2Checkout()) {
+  if (isParamBuilderSdkEnabled && !isParamBuilderSdkLoadedOrLoading) {
     setInWindow('_meta_param_builder_sdk_status', 'loading', true);
     injectScript(
       'https://unpkg.com/meta-capi-param-builder-clientjs/dist/clientParamBuilder.bundle.js',
@@ -722,15 +722,4 @@ function normalizePhoneNumber(phoneNumber) {
 function removeWhiteSpace(input) {
   if (!input) return input;
   return makeString(input).split(' ').join('');
-}
-
-function isMagento2Checkout() {
-  const checkoutConfig = copyFromWindow('checkoutConfig');
-
-  return (
-    getType(checkoutConfig) === 'object' &&
-    getType(checkoutConfig.quoteData) === 'object' &&
-    checkoutConfig.hasOwnProperty('defaultSuccessPageUrl') &&
-    checkoutConfig.hasOwnProperty('storeCode')
-  );
 }

@@ -1287,7 +1287,7 @@ function loadScripts(isParamBuilderSdkEnabled) {
   );
 
   const isParamBuilderSdkLoadedOrLoading = !!copyFromWindow('_meta_param_builder_sdk_status');
-  if (isParamBuilderSdkEnabled && !isParamBuilderSdkLoadedOrLoading && !isMagento2Checkout()) {
+  if (isParamBuilderSdkEnabled && !isParamBuilderSdkLoadedOrLoading) {
     setInWindow('_meta_param_builder_sdk_status', 'loading', true);
     injectScript(
       'https://unpkg.com/meta-capi-param-builder-clientjs/dist/clientParamBuilder.bundle.js',
@@ -1352,17 +1352,6 @@ function normalizePhoneNumber(phoneNumber) {
 function removeWhiteSpace(input) {
   if (!input) return input;
   return makeString(input).split(' ').join('');
-}
-
-function isMagento2Checkout() {
-  const checkoutConfig = copyFromWindow('checkoutConfig');
-
-  return (
-    getType(checkoutConfig) === 'object' &&
-    getType(checkoutConfig.quoteData) === 'object' &&
-    checkoutConfig.hasOwnProperty('defaultSuccessPageUrl') &&
-    checkoutConfig.hasOwnProperty('storeCode')
-  );
 }
 
 
@@ -3092,6 +3081,9 @@ setup: |-
 
 
 ___NOTES___
+
+2026-10-23 - Change Notes:
+  - Load the Param Builder SDK on Magento 2 checkout pages again. The skip added on 2026-05-13 is removed because the SDK (version 1.3.3) no longer conflicts with RequireJS there.
 
 2026-08-13 - Change Notes:
   - Add other data layer event names to automapping in "Inherit from DataLayer". Review your tag setup if you use this option in the Event Name Setup Method field.
