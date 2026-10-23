@@ -1303,7 +1303,7 @@ function loadScripts(isParamBuilderSdkEnabled) {
   );
 
   const isParamBuilderSdkLoadedOrLoading = !!copyFromWindow('_meta_param_builder_sdk_status');
-  if (isParamBuilderSdkEnabled && !isParamBuilderSdkLoadedOrLoading && !isMagento2Checkout()) {
+  if (isParamBuilderSdkEnabled && !isParamBuilderSdkLoadedOrLoading) {
     setInWindow('_meta_param_builder_sdk_status', 'loading', true);
     const paramBuilderSdkUrl =
       'https://' +
@@ -1374,17 +1374,6 @@ function normalizePhoneNumber(phoneNumber) {
 function removeWhiteSpace(input) {
   if (!input) return input;
   return makeString(input).split(' ').join('');
-}
-
-function isMagento2Checkout() {
-  const checkoutConfig = copyFromWindow('checkoutConfig');
-
-  return (
-    getType(checkoutConfig) === 'object' &&
-    getType(checkoutConfig.quoteData) === 'object' &&
-    checkoutConfig.hasOwnProperty('defaultSuccessPageUrl') &&
-    checkoutConfig.hasOwnProperty('storeCode')
-  );
 }
 
 
@@ -1870,45 +1859,6 @@ ___WEB_PERMISSIONS___
                     "boolean": false
                   }
                 ]
-              },
-              {
-                "type": 3,
-                "mapKey": [
-                  {
-                    "type": 1,
-                    "string": "key"
-                  },
-                  {
-                    "type": 1,
-                    "string": "read"
-                  },
-                  {
-                    "type": 1,
-                    "string": "write"
-                  },
-                  {
-                    "type": 1,
-                    "string": "execute"
-                  }
-                ],
-                "mapValue": [
-                  {
-                    "type": 1,
-                    "string": "checkoutConfig"
-                  },
-                  {
-                    "type": 8,
-                    "boolean": true
-                  },
-                  {
-                    "type": 8,
-                    "boolean": false
-                  },
-                  {
-                    "type": 8,
-                    "boolean": false
-                  }
-                ]
               }
             ]
           }
@@ -2147,7 +2097,7 @@ scenarios:
 
     assertApi('gtmOnSuccess').wasCalled();
     assertApi('gtmOnFailure').wasNotCalled();
-- name: '[Consent] Manual consent=false revokes fbq and calls gtmOnSuccess without
+- name: '[Consent] Manual consent set to false revokes fbq and calls gtmOnSuccess without
     scripts'
   code: |-
     mockData.consent = false;
@@ -2846,24 +2796,13 @@ scenarios:
       assertApi('gtmOnSuccess').wasCalled();
       assertApi('gtmOnFailure').wasNotCalled();
     });
-- name: '[Scripts] Param builder not injected when already loaded or loading, or on Magento 2 Checkout'
+- name: '[Scripts] Param builder not injected when already loaded or loading'
   code: |-
-    const magentoCheckoutConfig = {
-      quoteData: {},
-      defaultSuccessPageUrl: '/checkout/success',
-      storeCode: 'default'
-    };
-
-    [
-      { sdkStatus: 'loading', checkoutConfig: undefined },
-      { sdkStatus: 'loaded', checkoutConfig: undefined },
-      { sdkStatus: undefined, checkoutConfig: magentoCheckoutConfig }
-    ].forEach((scenario) => {
+    ['loading', 'loaded'].forEach((sdkStatus) => {
       injectScriptCalls = [];
       mock('copyFromWindow', (key) => {
         if (key === 'fbq') return mockFbq;
-        if (key === '_meta_param_builder_sdk_status') return scenario.sdkStatus;
-        if (key === 'checkoutConfig') return scenario.checkoutConfig;
+        if (key === '_meta_param_builder_sdk_status') return sdkStatus;
         return undefined;
       });
 
@@ -2875,6 +2814,25 @@ scenarios:
       assertApi('gtmOnSuccess').wasCalled();
       assertApi('gtmOnFailure').wasNotCalled();
     });
+- name: '[Scripts] Param builder is injected on Magento 2 Checkout pages'
+  code: |-
+    mock('copyFromWindow', (key) => {
+      if (key === 'fbq') return mockFbq;
+      if (key === 'checkoutConfig') {
+        return { quoteData: {}, defaultSuccessPageUrl: '/checkout/success', storeCode: 'default' };
+      }
+      return undefined;
+    });
+
+    runCode(mockData);
+
+    assertThat(injectScriptCalls.length).isEqualTo(2);
+    assertThat(injectScriptCalls[0].url).isEqualTo('https://connect.facebook.net/en_US/fbevents.js');
+    assertThat(injectScriptCalls[1].url).isEqualTo('https://unpkg.com/meta-capi-param-builder-clientjs/dist/clientParamBuilder.bundle.js');
+    assertThat(injectScriptCalls[1].cacheToken).isEqualTo('metaParamBuilderSdk');
+
+    assertApi('gtmOnSuccess').wasCalled();
+    assertApi('gtmOnFailure').wasNotCalled();
 - name: '[Scripts] fbevents failure calls gtmOnFailure'
   code: |-
     mock('injectScript', (url, onsuccess, onfailure) => {
@@ -3137,6 +3095,10 @@ setup: |-
 
 
 ___NOTES___
+
+2026-11-02 - Change Notes:
+  - Load the Param Builder SDK on Magento 2 checkout pages again. The skip added on 2026-05-13 is removed because the SDK (version 1.3.3) no longer conflicts with RequireJS there.
+  - Remove the checkoutConfig global from the Accesses global variables permission, since it was only read to detect Magento 2 checkout pages.
 
 2026-10-23 - Change Notes:
   - Add option to serve the Parameter Builder SDK library from Stape's CDN (stapecdn.com) instead of unpkg.com, which remains the default.
