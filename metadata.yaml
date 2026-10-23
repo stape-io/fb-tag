@@ -1,6 +1,8 @@
 homepage: 'https://stape.io/'
 documentation: 'https://github.com/stape-io/fb-tag'
 versions:
+  - sha: 9022c295a2ca4279ab8bda3bd90422fe15a4397d
+    changeNotes: Load Param Builder SDK on Magento 2 Checkout pages again.
   - sha: 9550b7c3f511759427f83073e8411372be458c44
     changeNotes: Added other data layer event names to automapping in Inherit from DataLayer.
   - sha: bbdd7aa222cf69015f717b01c95f1f80621352e9
