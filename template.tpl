@@ -619,7 +619,23 @@ ___TEMPLATE_PARAMETERS___
         "simpleValueType": true,
         "defaultValue": true,
         "help": "When enabled, the Parameter Builder SDK library will be loaded. This library helps retrieving and saving the Browser ID (\u003ci\u003e_fbp\u003c/i\u003e cookie) and Click ID (\u003ci\u003e_fbc\u003c/i\u003e cookie) values into cookies, and it also tries to retrieve a backup Click ID from in-app-browser when feasible.\n\u003cbr/\u003e\u003cbr/\u003e\n\u003ca href\u003d\"https://developers.facebook.com/docs/marketing-api/conversions-api/parameter-builder-library\"\u003eLearn more\u003c/a\u003e.",
-        "alwaysInSummary": true
+        "alwaysInSummary": true,
+        "subParams": [
+          {
+            "type": "CHECKBOX",
+            "name": "serveParamBuilderSdkFromStape",
+            "checkboxText": "Serve the Parameter Builder SDK library from Stape\u0027s CDN",
+            "simpleValueType": true,
+            "help": "The Parameter Builder SDK library is originally hosted on and loaded from \u003ci\u003eunpkg.com\u003c/i\u003e by Meta. Enable this option to load the file from Stape\u0027s CDN (\u003ci\u003estapecdn.com\u003c/i\u003e) instead.",
+            "enablingConditions": [
+              {
+                "paramName": "enableParamBuilderSdk",
+                "paramValue": true,
+                "type": "EQUALS"
+              }
+            ]
+          }
+        ]
       }
     ]
   }
@@ -1289,8 +1305,14 @@ function loadScripts(isParamBuilderSdkEnabled) {
   const isParamBuilderSdkLoadedOrLoading = !!copyFromWindow('_meta_param_builder_sdk_status');
   if (isParamBuilderSdkEnabled && !isParamBuilderSdkLoadedOrLoading && !isMagento2Checkout()) {
     setInWindow('_meta_param_builder_sdk_status', 'loading', true);
+    const paramBuilderSdkUrl =
+      'https://' +
+      (data.serveParamBuilderSdkFromStape
+        ? 'stapecdn.com'
+        : 'unpkg.com/meta-capi-param-builder-clientjs/dist') +
+      '/clientParamBuilder.bundle.js';
     injectScript(
-      'https://unpkg.com/meta-capi-param-builder-clientjs/dist/clientParamBuilder.bundle.js',
+      paramBuilderSdkUrl,
       () => {
         setInWindow('_meta_param_builder_sdk_status', 'loaded', true);
         if (copyFromWindow('clientParamBuilder.processAndCollectAllParams')) {
@@ -1938,6 +1960,10 @@ ___WEB_PERMISSIONS___
               {
                 "type": 1,
                 "string": "https://unpkg.com/meta-capi-param-builder-clientjs/dist/clientParamBuilder.bundle.js"
+              },
+              {
+                "type": 1,
+                "string": "https://stapecdn.com/clientParamBuilder.bundle.js"
               }
             ]
           }
@@ -2763,73 +2789,92 @@ scenarios:
       assertApi('gtmOnSuccess').wasCalled();
       assertApi('gtmOnFailure').wasNotCalled();
     });
-- name: '[Scripts] Param builder calls processAndCollectAllParams when available'
+- name: '[Scripts] Param builder SDK is injected from the selected source and started once loaded'
   code: |-
-    mock('copyFromWindow', (key) => {
-      if (key === 'fbq') return mockFbq;
-      if (key === 'clientParamBuilder.processAndCollectAllParams') return function() {};
-      return undefined;
+    const unpkgUrl = 'https://unpkg.com/meta-capi-param-builder-clientjs/dist/clientParamBuilder.bundle.js';
+    const stapeUrl = 'https://stapecdn.com/clientParamBuilder.bundle.js';
+
+    [
+      { serveFromStape: true, expectedUrl: stapeUrl, sdkMethod: 'processAndCollectAllParams' },
+      { serveFromStape: false, expectedUrl: unpkgUrl, sdkMethod: 'processAndCollectAllParams' },
+      { serveFromStape: undefined, expectedUrl: unpkgUrl, sdkMethod: 'processAndCollectParams' }
+    ].forEach((scenario) => {
+      injectScriptCalls = [];
+      const sdkCalls = [];
+      mock('copyFromWindow', (key) => {
+        if (key === 'fbq') return mockFbq;
+        if (key === 'clientParamBuilder.' + scenario.sdkMethod) return () => {};
+        return undefined;
+      });
+      mock('callInWindow', (key) => {
+        sdkCalls.push(key);
+      });
+      const testData = assign({}, mockData);
+      if (scenario.serveFromStape !== undefined) {
+        testData.serveParamBuilderSdkFromStape = scenario.serveFromStape;
+      }
+
+      runCode(testData);
+
+      assertThat(injectScriptCalls.length).isEqualTo(2);
+      assertThat(injectScriptCalls[0].url).isEqualTo('https://connect.facebook.net/en_US/fbevents.js');
+      assertThat(injectScriptCalls[1].url).isEqualTo(scenario.expectedUrl);
+      assertThat(injectScriptCalls[1].cacheToken).isEqualTo('metaParamBuilderSdk');
+      assertThat(sdkCalls).isEqualTo(['clientParamBuilder.' + scenario.sdkMethod]);
+
+      assertApi('gtmOnSuccess').wasCalled();
+      assertApi('gtmOnFailure').wasNotCalled();
     });
-
-    runCode(mockData);
-
-    assertThat(injectScriptCalls.length).isEqualTo(2);
-    assertApi('callInWindow').wasCalledWith('clientParamBuilder.processAndCollectAllParams');
-    assertApi('gtmOnSuccess').wasCalled();
-    assertApi('gtmOnFailure').wasNotCalled();
-- name: '[Scripts] Param builder disabled injects only fbevents and removes -pb suffix'
+- name: '[Scripts] Param builder disabled injects only fbevents and removes -pb suffix, regardless of the Stape CDN option'
   code: |-
-    const testData = assign(assign({}, mockData), { enableParamBuilderSdk: false });
+    [undefined, true].forEach((serveFromStape) => {
+      injectScriptCalls = [];
+      fbqCalls = [];
+      const testData = assign(assign({}, mockData), { enableParamBuilderSdk: false });
+      if (serveFromStape !== undefined) {
+        testData.serveParamBuilderSdkFromStape = serveFromStape;
+      }
 
-    runCode(testData);
+      runCode(testData);
 
-    assertThat(injectScriptCalls.length).isEqualTo(1);
-    assertThat(injectScriptCalls[0].url).isEqualTo('https://connect.facebook.net/en_US/fbevents.js');
+      assertThat(injectScriptCalls.length).isEqualTo(1);
+      assertThat(injectScriptCalls[0].url).isEqualTo('https://connect.facebook.net/en_US/fbevents.js');
 
-    const agentCalls = fbqCalls.filter((c) => c[0] === 'set' && c[1] === 'agent');
-    assertThat(agentCalls[0][2]).isEqualTo(PARTNER_AGENT_VERSION);
+      const agentCalls = fbqCalls.filter((c) => c[0] === 'set' && c[1] === 'agent');
+      assertThat(agentCalls[0][2]).isEqualTo(PARTNER_AGENT_VERSION);
 
-    assertApi('gtmOnSuccess').wasCalled();
-    assertApi('gtmOnFailure').wasNotCalled();
-- name: '[Scripts] Param builder not injected again when already loaded or loading'
-  code: |2-
-       ['loading', 'loaded'].forEach((status) => {
-          injectScriptCalls = [];
+      assertApi('gtmOnSuccess').wasCalled();
+      assertApi('gtmOnFailure').wasNotCalled();
+    });
+- name: '[Scripts] Param builder not injected when already loaded or loading, or on Magento 2 Checkout'
+  code: |-
+    const magentoCheckoutConfig = {
+      quoteData: {},
+      defaultSuccessPageUrl: '/checkout/success',
+      storeCode: 'default'
+    };
 
-          mock('copyFromWindow', (key) => {
-            if (key === 'fbq') return mockFbq;
-            if (key === '_meta_param_builder_sdk_status') return status;
-            return undefined;
-          });
+    [
+      { sdkStatus: 'loading', checkoutConfig: undefined },
+      { sdkStatus: 'loaded', checkoutConfig: undefined },
+      { sdkStatus: undefined, checkoutConfig: magentoCheckoutConfig }
+    ].forEach((scenario) => {
+      injectScriptCalls = [];
+      mock('copyFromWindow', (key) => {
+        if (key === 'fbq') return mockFbq;
+        if (key === '_meta_param_builder_sdk_status') return scenario.sdkStatus;
+        if (key === 'checkoutConfig') return scenario.checkoutConfig;
+        return undefined;
+      });
 
-          runCode(mockData);
+      runCode(mockData);
 
-          assertThat(injectScriptCalls.length).isEqualTo(1);
-          assertThat(injectScriptCalls[0].url).isEqualTo('https://connect.facebook.net/en_US/fbevents.js');
+      assertThat(injectScriptCalls.length).isEqualTo(1);
+      assertThat(injectScriptCalls[0].url).isEqualTo('https://connect.facebook.net/en_US/fbevents.js');
 
-          assertApi('gtmOnSuccess').wasCalled();
-          assertApi('gtmOnFailure').wasNotCalled();
-        });
-- name: '[Scripts] Param builder not injected on Magento 2 Checkout'
-  code: |2-
-       const checkoutConfig = {};
-        checkoutConfig.quoteData = {};
-        checkoutConfig.defaultSuccessPageUrl = '/checkout/success';
-        checkoutConfig.storeCode = 'default';
-
-        mock('copyFromWindow', (key) => {
-          if (key === 'fbq') return mockFbq;
-          if (key === 'checkoutConfig') return checkoutConfig;
-          return undefined;
-        });
-
-        runCode(mockData);
-
-        assertThat(injectScriptCalls.length).isEqualTo(1);
-        assertThat(injectScriptCalls[0].url).isEqualTo('https://connect.facebook.net/en_US/fbevents.js');
-
-        assertApi('gtmOnSuccess').wasCalled();
-        assertApi('gtmOnFailure').wasNotCalled();
+      assertApi('gtmOnSuccess').wasCalled();
+      assertApi('gtmOnFailure').wasNotCalled();
+    });
 - name: '[Scripts] fbevents failure calls gtmOnFailure'
   code: |-
     mock('injectScript', (url, onsuccess, onfailure) => {
@@ -3092,6 +3137,10 @@ setup: |-
 
 
 ___NOTES___
+
+2026-10-23 - Change Notes:
+  - Add option to serve the Parameter Builder SDK library from Stape's CDN (stapecdn.com) instead of unpkg.com, which remains the default.
+  - Allow the stapecdn.com script URL in the Injects scripts permission.
 
 2026-08-13 - Change Notes:
   - Add other data layer event names to automapping in "Inherit from DataLayer". Review your tag setup if you use this option in the Event Name Setup Method field.
