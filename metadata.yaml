@@ -1,6 +1,8 @@
 homepage: 'https://stape.io/'
 documentation: 'https://github.com/stape-io/fb-tag'
 versions:
+  - sha: 7a79e383f5260c354f51dd799ea2569ae837a23c
+    changeNotes: Added option to serve the Parameter Builder SDK library from Stape's CDN.
   - sha: 9550b7c3f511759427f83073e8411372be458c44
     changeNotes: Added other data layer event names to automapping in Inherit from DataLayer.
   - sha: bbdd7aa222cf69015f717b01c95f1f80621352e9
