@@ -81,6 +81,8 @@ Includes support for:
   - **Browser ID** (`_fbp` cookie)
   - **Click ID** (`_fbc` cookie) — including backup retrieval from in-app browsers
 
+  By default, the SDK file is loaded from `unpkg.com`. Check "Serve the Parameter Builder SDK library from Stape's CDN" to load it from `stapecdn.com` instead.
+
 ## Useful Resources
 - [How to integrate Facebook Pixel with a web GTM container](https://stape.io/blog/add-facebook-pixel-gtm)
 

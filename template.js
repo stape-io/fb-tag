@@ -659,8 +659,14 @@ function loadScripts(isParamBuilderSdkEnabled) {
   const isParamBuilderSdkLoadedOrLoading = !!copyFromWindow('_meta_param_builder_sdk_status');
   if (isParamBuilderSdkEnabled && !isParamBuilderSdkLoadedOrLoading && !isMagento2Checkout()) {
     setInWindow('_meta_param_builder_sdk_status', 'loading', true);
+    const paramBuilderSdkUrl =
+      'https://' +
+      (data.serveParamBuilderSdkFromStape
+        ? 'stapecdn.com'
+        : 'unpkg.com/meta-capi-param-builder-clientjs/dist') +
+      '/clientParamBuilder.bundle.js';
     injectScript(
-      'https://unpkg.com/meta-capi-param-builder-clientjs/dist/clientParamBuilder.bundle.js',
+      paramBuilderSdkUrl,
       () => {
         setInWindow('_meta_param_builder_sdk_status', 'loaded', true);
         if (copyFromWindow('clientParamBuilder.processAndCollectAllParams')) {
